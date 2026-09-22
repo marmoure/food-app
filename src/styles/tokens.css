@@ -1,0 +1,86 @@
+/* Design tokens. Light palette on :root; dark palette for OS dark mode or an explicit data-theme="dark". */
+:root {
+  --bg: #edf1ee;
+  --surface: #ffffff;
+  --surface-2: #e2e8e4;
+  --ink: #13201b;
+  --ink-2: #48584f;
+  --ink-3: #6b7c74;
+  --line: #d2dbd6;
+  --accent: #0a6b58;
+  --accent-2: #08574a;
+  --on-accent: #ffffff;
+  --accent-soft: #d3e9e2;
+  --fridge: #0a6b58;
+  --fridge-soft: #d3e9e2;
+  --frost: #2a5c93;
+  --frost-soft: #dce7f5;
+  --fresh: #8f5b00;
+  --fresh-soft: #f4e5c2;
+  --free: #6c3f9e;
+  --free-soft: #e9def5;
+  --grab: #48584f;
+  --grab-soft: #e2e8e4;
+  --warn: #a13f18;
+  --warn-soft: #f7ddd1;
+  --shadow: 0 1px 2px rgba(19, 32, 27, 0.05), 0 6px 18px rgba(19, 32, 27, 0.05);
+  --display: 'Bricolage Grotesque', 'Avenir Next', 'Segoe UI', system-ui, sans-serif;
+  --body: 'Atkinson Hyperlegible', 'Segoe UI', system-ui, -apple-system, sans-serif;
+  --mono: 'IBM Plex Mono', ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    color-scheme: dark;
+    --bg: #0c1411;
+    --surface: #131f1b;
+    --surface-2: #1a2924;
+    --ink: #e2ece7;
+    --ink-2: #a7b8b0;
+    --ink-3: #80928a;
+    --line: #25352f;
+    --accent: #47c2a5;
+    --accent-2: #6dd4bb;
+    --on-accent: #05231c;
+    --accent-soft: #153a31;
+    --fridge: #47c2a5;
+    --fridge-soft: #153a31;
+    --frost: #8fb7ea;
+    --frost-soft: #1a2c44;
+    --fresh: #e5b452;
+    --fresh-soft: #382c12;
+    --free: #c6a3ee;
+    --free-soft: #2d2040;
+    --grab: #a7b8b0;
+    --grab-soft: #1a2924;
+    --warn: #ef9b75;
+    --warn-soft: #3d2115;
+    --shadow: none;
+  }
+}
+:root[data-theme='dark'] {
+  color-scheme: dark;
+  --bg: #0c1411;
+  --surface: #131f1b;
+  --surface-2: #1a2924;
+  --ink: #e2ece7;
+  --ink-2: #a7b8b0;
+  --ink-3: #80928a;
+  --line: #25352f;
+  --accent: #47c2a5;
+  --accent-2: #6dd4bb;
+  --on-accent: #05231c;
+  --accent-soft: #153a31;
+  --fridge: #47c2a5;
+  --fridge-soft: #153a31;
+  --frost: #8fb7ea;
+  --frost-soft: #1a2c44;
+  --fresh: #e5b452;
+  --fresh-soft: #382c12;
+  --free: #c6a3ee;
+  --free-soft: #2d2040;
+  --grab: #a7b8b0;
+  --grab-soft: #1a2924;
+  --warn: #ef9b75;
+  --warn-soft: #3d2115;
+  --shadow: none;
+}

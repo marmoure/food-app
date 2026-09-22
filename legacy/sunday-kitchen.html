@@ -1,0 +1,1083 @@
+<title>Sunday Kitchen</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#EDF1EE; --surface:#FFFFFF; --surface-2:#E2E8E4; --ink:#13201B; --ink-2:#48584F; --ink-3:#6B7C74; --line:#D2DBD6;
+  --accent:#0A6B58; --accent-2:#08574A; --on-accent:#FFFFFF; --accent-soft:#D3E9E2;
+  --fridge:#0A6B58; --fridge-soft:#D3E9E2;
+  --frost:#2A5C93; --frost-soft:#DCE7F5;
+  --fresh:#8F5B00; --fresh-soft:#F4E5C2;
+  --free:#6C3F9E; --free-soft:#E9DEF5;
+  --grab:#48584F; --grab-soft:#E2E8E4;
+  --warn:#A13F18; --warn-soft:#F7DDD1;
+  --shadow:0 1px 2px rgba(19,32,27,.05), 0 6px 18px rgba(19,32,27,.05);
+  --display:"Bricolage Grotesque","Avenir Next","Segoe UI",system-ui,sans-serif;
+  --body:"Atkinson Hyperlegible","Segoe UI",system-ui,-apple-system,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    color-scheme:dark;
+    --bg:#0C1411; --surface:#131F1B; --surface-2:#1A2924; --ink:#E2ECE7; --ink-2:#A7B8B0; --ink-3:#80928A; --line:#25352F;
+    --accent:#47C2A5; --accent-2:#6DD4BB; --on-accent:#05231C; --accent-soft:#153A31;
+    --fridge:#47C2A5; --fridge-soft:#153A31;
+    --frost:#8FB7EA; --frost-soft:#1A2C44;
+    --fresh:#E5B452; --fresh-soft:#382C12;
+    --free:#C6A3EE; --free-soft:#2D2040;
+    --grab:#A7B8B0; --grab-soft:#1A2924;
+    --warn:#EF9B75; --warn-soft:#3D2115;
+    --shadow:none;
+  }
+}
+:root[data-theme="dark"]{
+  color-scheme:dark;
+  --bg:#0C1411; --surface:#131F1B; --surface-2:#1A2924; --ink:#E2ECE7; --ink-2:#A7B8B0; --ink-3:#80928A; --line:#25352F;
+  --accent:#47C2A5; --accent-2:#6DD4BB; --on-accent:#05231C; --accent-soft:#153A31;
+  --fridge:#47C2A5; --fridge-soft:#153A31;
+  --frost:#8FB7EA; --frost-soft:#1A2C44;
+  --fresh:#E5B452; --fresh-soft:#382C12;
+  --free:#C6A3EE; --free-soft:#2D2040;
+  --grab:#A7B8B0; --grab-soft:#1A2924;
+  --warn:#EF9B75; --warn-soft:#3D2115;
+  --shadow:none;
+}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.55}
+.wrap{max-width:1080px;margin:0 auto;padding-inline:16px;padding-block:22px 72px}
+h1,h2,h3,h4{font-family:var(--display);line-height:1.15;margin:0;text-wrap:balance;letter-spacing:-.01em}
+h1{font-size:clamp(2rem,5vw,2.9rem);font-weight:800;letter-spacing:-.03em}
+h2{font-size:1.55rem;font-weight:700}
+h3{font-size:1.15rem;font-weight:700}
+p{margin:0}
+a{color:var(--accent)}
+button{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:6px}
+.muted{color:var(--ink-2)}
+.small{font-size:.875rem}
+.mono{font-family:var(--mono);font-variant-numeric:tabular-nums}
+.eyebrow{font-family:var(--mono);font-size:.74rem;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3)}
+
+/* header */
+.top{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:12px 24px;margin-bottom:18px}
+.top .tag{color:var(--ink-2);margin-top:6px;max-width:52ch}
+.weekpill{display:flex;flex-direction:column;align-items:flex-end;gap:2px;text-align:right}
+.weekpill b{font-family:var(--display);font-size:1.1rem}
+.sync{font-size:.78rem;color:var(--ink-3);font-family:var(--mono)}
+
+/* tabs */
+.tabs{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);display:flex;gap:4px;overflow-x:auto;padding-block:8px;margin-bottom:22px;border-bottom:1px solid var(--line);scrollbar-width:none}
+.tabs::-webkit-scrollbar{display:none}
+.tab{flex:0 0 auto;border:0;background:transparent;padding:8px 14px;border-radius:999px;cursor:pointer;color:var(--ink-2);font-weight:700;font-size:.95rem}
+.tab:hover{background:var(--surface-2);color:var(--ink)}
+.tab[aria-selected="true"]{background:var(--ink);color:var(--bg)}
+
+.panel{display:grid;gap:22px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:20px;box-shadow:var(--shadow)}
+.card-h{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:6px 16px;margin-bottom:14px}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,330px),1fr));gap:22px;align-items:start}
+
+/* source chips */
+.src{display:inline-flex;align-items:center;gap:6px;font-family:var(--mono);font-size:.72rem;letter-spacing:.04em;text-transform:uppercase;padding:2px 8px;border-radius:999px;white-space:nowrap;font-weight:500}
+.src::before{content:"";width:7px;height:7px;border-radius:50%;background:currentColor}
+.src-fridge{color:var(--fridge);background:var(--fridge-soft)}
+.src-freezer{color:var(--frost);background:var(--frost-soft)}
+.src-fresh{color:var(--fresh);background:var(--fresh-soft)}
+.src-free{color:var(--free);background:var(--free-soft)}
+.src-grab{color:var(--grab);background:var(--grab-soft)}
+
+/* today */
+.hero{display:grid;gap:6px}
+.hero h2{font-size:clamp(1.7rem,4vw,2.3rem);font-weight:800;letter-spacing:-.02em}
+.slots{display:grid;gap:0}
+.slot{display:grid;grid-template-columns:92px 1fr;gap:4px 16px;padding:14px 0;border-top:1px solid var(--line)}
+.slot:first-child{border-top:0;padding-top:4px}
+.slot .when{font-family:var(--mono);font-size:.78rem;text-transform:uppercase;letter-spacing:.06em;color:var(--ink-3);padding-top:3px}
+.slot .what{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px}
+.slot .dish{font-weight:700;font-size:1.05rem}
+.slot .how{grid-column:2;color:var(--ink-2);font-size:.92rem}
+.linkbtn{border:0;background:none;padding:0;color:var(--accent);cursor:pointer;text-decoration:underline;text-underline-offset:3px;font-size:.9rem}
+.tasks{list-style:none;margin:0;padding:0;display:grid;gap:10px}
+.tasks li{display:grid;grid-template-columns:auto 1fr;gap:10px;align-items:start}
+.tasks .dot{width:10px;height:10px;border-radius:3px;margin-top:7px;background:var(--accent)}
+.tasks .dot.frost{background:var(--frost)}
+.tasks .dot.warn{background:var(--warn)}
+.tasks .dot.fresh{background:var(--fresh)}
+
+/* week switcher */
+.switch{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.wk{border:1px solid var(--line);background:var(--surface);border-radius:10px;padding:7px 12px;cursor:pointer;text-align:left;display:grid;line-height:1.25}
+.wk b{font-family:var(--display);font-size:.98rem}
+.wk span{font-size:.75rem;color:var(--ink-3);font-family:var(--mono)}
+.wk[aria-pressed="true"]{border-color:var(--ink);background:var(--ink);color:var(--bg)}
+.wk[aria-pressed="true"] span{color:var(--bg);opacity:.75}
+.toggle{display:inline-flex;align-items:center;gap:10px;cursor:pointer;font-size:.92rem;color:var(--ink-2);margin-left:auto}
+.toggle input{width:18px;height:18px;accent-color:var(--frost)}
+
+/* week grid */
+.days{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:8px}
+.day{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:10px;display:grid;grid-template-rows:auto repeat(4,minmax(86px,auto));gap:6px}
+.day.is-today{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent)}
+.day-h{display:flex;justify-content:space-between;align-items:baseline;gap:4px}
+.day-h b{font-family:var(--display);font-size:1rem}
+.day-h span{font-family:var(--mono);font-size:.72rem;color:var(--ink-3)}
+.cell{border-radius:8px;padding:7px 8px;font-size:.84rem;line-height:1.3;border-left:3px solid var(--line);background:var(--bg);display:grid;gap:3px;align-content:start}
+.cell i{font-style:normal;font-family:var(--mono);font-size:.66rem;text-transform:uppercase;letter-spacing:.06em;color:var(--ink-3)}
+.cell.fridge{border-left-color:var(--fridge)}
+.cell.freezer{border-left-color:var(--frost)}
+.cell.fresh{border-left-color:var(--fresh)}
+.cell.free{border-left-color:var(--free)}
+.cell.grab{border-left-color:var(--grab)}
+.legend{display:flex;flex-wrap:wrap;gap:8px 14px;align-items:center}
+@media (max-width:900px){
+  .days{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .day{grid-template-rows:auto}
+}
+@media (max-width:520px){
+  .days{grid-template-columns:1fr}
+  .slot{grid-template-columns:1fr}
+  .slot .how{grid-column:1}
+}
+
+/* checklists */
+.checks{list-style:none;margin:0;padding:0;display:grid}
+.checks li{border-top:1px solid var(--line)}
+.checks li:first-child{border-top:0}
+.ck{display:grid;grid-template-columns:22px 1fr;gap:12px;align-items:start;padding:10px 2px;cursor:pointer}
+.ck input{width:20px;height:20px;margin:2px 0 0;accent-color:var(--accent);cursor:pointer}
+.ck input:checked + span{color:var(--ink-3);text-decoration:line-through;text-decoration-color:var(--ink-3)}
+.ck small{display:block;color:var(--ink-3);font-size:.84rem;text-decoration:none}
+.prog{font-family:var(--mono);font-size:.8rem;color:var(--ink-3)}
+.shopsec h3{font-size:1rem;display:flex;justify-content:space-between;gap:8px;align-items:baseline;padding-bottom:4px;border-bottom:2px solid var(--ink)}
+
+/* sunday steps */
+.steps{list-style:none;margin:0;padding:0;display:grid;gap:0}
+.step{display:grid;grid-template-columns:62px 22px 1fr;gap:12px;align-items:start;padding:14px 0;border-top:1px solid var(--line)}
+.step:first-child{border-top:0}
+.step .t{font-family:var(--mono);font-size:.85rem;color:var(--ink-3);padding-top:1px}
+.step input{width:20px;height:20px;margin:2px 0 0;accent-color:var(--accent);cursor:pointer}
+.step .body b{display:block;font-family:var(--display);font-size:1.02rem}
+.step input:checked ~ .body{opacity:.55}
+.where{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,230px),1fr));gap:12px}
+.where > div{border-radius:12px;padding:14px;display:grid;gap:6px;align-content:start}
+.where .f1{background:var(--fridge-soft)}
+.where .f2{background:var(--frost-soft)}
+.where h4{font-size:.95rem}
+.where ul{margin:0;padding-left:18px}
+
+/* buttons */
+.btn{border:1px solid var(--accent);background:var(--accent);color:var(--on-accent);border-radius:10px;padding:9px 14px;font-weight:700;cursor:pointer}
+.btn:hover{background:var(--accent-2)}
+.btn.ghost{background:transparent;color:var(--accent)}
+.btn.ghost:hover{background:var(--accent-soft)}
+.btn[disabled]{opacity:.55;cursor:default}
+.row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+
+/* recipes */
+.rgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,340px),1fr));gap:16px;align-items:start}
+.recipe{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:18px;display:grid;gap:10px}
+.recipe .local{font-style:italic;color:var(--ink-2);font-size:.92rem}
+.meta{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:.84rem;color:var(--ink-2)}
+.meta span b{color:var(--ink)}
+.recipe details summary{cursor:pointer;font-weight:700;color:var(--accent);list-style:none}
+.recipe details summary::-webkit-details-marker{display:none}
+.recipe details summary::before{content:"+ ";font-family:var(--mono)}
+.recipe details[open] summary::before{content:"− "}
+.ing{list-style:none;margin:12px 0;padding:0;display:grid;gap:4px}
+.ing li{display:grid;grid-template-columns:78px 1fr;gap:10px;font-size:.93rem}
+.ing .q{font-family:var(--mono);font-size:.84rem;color:var(--ink-2);text-align:right;padding-top:1px}
+.rsteps{margin:0;padding-left:22px;display:grid;gap:8px;font-size:.95rem}
+.note{border-radius:10px;padding:10px 12px;font-size:.9rem;background:var(--surface-2)}
+.note.frost{background:var(--frost-soft)}
+.kind{font-family:var(--mono);font-size:.7rem;text-transform:uppercase;letter-spacing:.07em;color:var(--ink-3)}
+.filters{display:flex;flex-wrap:wrap;gap:8px}
+.fchip{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:6px 12px;cursor:pointer;font-size:.9rem}
+.fchip[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+
+/* freezer */
+.meter{display:grid;gap:8px}
+.meter-bar{position:relative;height:14px;border-radius:999px;display:grid;grid-template-columns:6fr 8fr 6fr;overflow:hidden}
+.meter-bar .z1{background:var(--warn-soft)}
+.meter-bar .z2{background:var(--fridge-soft)}
+.meter-bar .z3{background:var(--frost-soft)}
+.meter-mark{position:absolute;top:-4px;width:4px;height:22px;border-radius:2px;background:var(--ink);transform:translateX(-2px)}
+.meter-scale{display:grid;grid-template-columns:6fr 8fr 6fr;font-family:var(--mono);font-size:.72rem;color:var(--ink-3)}
+.big{font-family:var(--display);font-weight:800;font-size:3rem;line-height:1;letter-spacing:-.03em}
+.status{display:inline-block;padding:3px 10px;border-radius:999px;font-weight:700;font-size:.85rem}
+.status.low{background:var(--warn-soft);color:var(--warn)}
+.status.ok{background:var(--fridge-soft);color:var(--fridge)}
+.status.full{background:var(--frost-soft);color:var(--frost)}
+.fz-list{list-style:none;margin:0;padding:0;display:grid}
+.fz-list li{display:grid;grid-template-columns:1fr auto;gap:8px 12px;align-items:center;padding:12px 0;border-top:1px solid var(--line)}
+.fz-list li:first-child{border-top:0}
+.fz-name{font-weight:700}
+.fz-age{font-size:.82rem;color:var(--ink-3);font-family:var(--mono)}
+.fz-age.old{color:var(--warn)}
+.stepper{display:inline-flex;align-items:center;border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.stepper button{border:0;background:var(--surface-2);width:36px;height:34px;cursor:pointer;font-size:1.1rem;font-weight:700}
+.stepper button:hover{background:var(--accent-soft)}
+.stepper output{min-width:38px;text-align:center;font-family:var(--mono);font-weight:500}
+.form{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,150px),1fr));gap:10px;align-items:end}
+.form label{display:grid;gap:4px;font-size:.84rem;color:var(--ink-2)}
+.form input,.form select{font:inherit;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:8px 10px;width:100%;min-width:0}
+.empty{padding:18px;border:1px dashed var(--line);border-radius:12px;color:var(--ink-2);text-align:center}
+
+/* start */
+.rhythm{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px}
+.rhythm div{border-radius:10px;padding:10px 8px;display:grid;gap:2px;align-content:start;min-height:92px}
+.rhythm b{font-family:var(--display)}
+.rhythm span{font-size:.8rem;line-height:1.3}
+.r-shop{background:var(--fresh-soft)}
+.r-cook{background:var(--accent);color:var(--on-accent)}
+.r-fridge{background:var(--fridge-soft)}
+.r-freezer{background:var(--frost-soft)}
+.r-free{background:var(--free-soft)}
+@media (max-width:700px){.rhythm{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.rules{margin:0;padding-left:20px;display:grid;gap:8px}
+.prefs{display:flex;flex-wrap:wrap;gap:8px}
+.prefs span{background:var(--surface-2);border-radius:999px;padding:4px 12px;font-size:.88rem}
+@media (prefers-reduced-motion:no-preference){.tab,.wk,.fchip,.btn{transition:background-color .15s,color .15s}}
+</style>
+
+<div class="wrap">
+  <header class="top">
+    <div>
+      <div class="eyebrow">Weekly food system · Algiers kitchen, one person</div>
+      <h1>Sunday Kitchen</h1>
+      <p class="tag">Shop on Saturday, cook for about 2½ hours on Sunday, then only reheat Monday to Friday. Halal, mild, and no raw onion or garlic.</p>
+    </div>
+    <div class="weekpill"><b id="pill-main"></b><span class="muted small" id="pill-sub"></span><span class="sync" id="sync">Saved on this device</span></div>
+  </header>
+
+  <nav class="tabs" role="tablist" aria-label="Sections">
+    <button class="tab" role="tab" data-tab="today" id="tab-today">Today</button>
+    <button class="tab" role="tab" data-tab="week" id="tab-week">Week plan</button>
+    <button class="tab" role="tab" data-tab="sunday" id="tab-sunday">Sunday cook</button>
+    <button class="tab" role="tab" data-tab="shop" id="tab-shop">Shopping</button>
+    <button class="tab" role="tab" data-tab="recipes" id="tab-recipes">Recipes</button>
+    <button class="tab" role="tab" data-tab="freezer" id="tab-freezer">Freezer</button>
+    <button class="tab" role="tab" data-tab="start" id="tab-start">Start here</button>
+  </nav>
+
+  <main>
+    <section class="panel" id="p-today" role="tabpanel" hidden></section>
+    <section class="panel" id="p-week" role="tabpanel" hidden></section>
+    <section class="panel" id="p-sunday" role="tabpanel" hidden></section>
+    <section class="panel" id="p-shop" role="tabpanel" hidden></section>
+    <section class="panel" id="p-recipes" role="tabpanel" hidden></section>
+    <section class="panel" id="p-freezer" role="tabpanel" hidden></section>
+    <section class="panel" id="p-start" role="tabpanel" hidden></section>
+  </main>
+</div>
+
+<script>
+/* ------------------------------------------------------------------ */
+/* Recipes                                                             */
+/* ------------------------------------------------------------------ */
+const R = {
+  "loubia": {
+    name:"Loubia with beef", short:"Loubia", local:"Loubia bel lham", kind:"stew", week:1, serves:6,
+    time:"20 min hands-on · 35 min pressure", where:"Multicooker",
+    store:"Fridge 3 days · Freezer 3 months",
+    reheat:"Microwave 3 min, stir halfway (stove: small pot, splash of water, 6 min). Toast a slice of frozen bread with it.",
+    ing:[["500 g","dried white beans, soaked overnight and drained (or 3 × 400 g cans, drained)"],["600 g","beef chunks (épaule), 3 cm cubes"],["1","onion, grated. It melts into the sauce and you won't find any pieces"],["2 cloves","garlic, grated (optional, fully cooked)"],["2","carrots, sliced"],["2 tbsp","tomato paste"],["1 tsp","sweet paprika (paprika douce)"],["1 tsp","cumin"],["½ tsp","black pepper"],["1","bay leaf"],["1½ tsp","salt"],["3 tbsp","olive oil"],["1.2 L","water (1.8 L if using the stove)"],["handful","parsley, chopped"]],
+    steps:["Sauté mode: heat the oil and brown the beef with the onion and garlic for 8 minutes.","Stir in the tomato paste, paprika, cumin and pepper. Cook 1 minute.","Add the drained beans, carrots, bay leaf, salt and water. Close the lid.","Pressure 35 minutes, then let the pressure drop on its own for 10 minutes.","Taste for salt. If it's thin, simmer on sauté with the lid off for 5 minutes. Finish with parsley."],
+    alt:"No pressure function: Slow/Stew mode for about 3 hours, or a covered pot on the stove for about 1½ hours until the beans are soft."
+  },
+  "chorba-frik": {
+    name:"Chorba frik with chicken", short:"Chorba frik", local:"Chorba frik (mild, no harissa)", kind:"pot", week:1, serves:6,
+    time:"20 min hands-on · 50 min simmer", where:"Big pot, stove",
+    store:"Fridge 3 days · Freezer 3 months",
+    reheat:"Add a splash of water because it thickens. Microwave 3 min or small pot 5 min. Bread on the side.",
+    ing:[["4","chicken legs (~900 g)"],["1","onion, grated"],["2","carrots, small dice"],["1","zucchini, small dice"],["1","tomato, grated"],["2 tbsp","tomato paste"],["1 small can","chickpeas, drained (or 100 g dried, soaked)"],["120 g","frik (crushed green wheat), rinsed"],["1 tsp","sweet paprika"],["½ tsp","cinnamon"],["½ tsp","black pepper"],["1 tsp","dried mint"],["2 tsp","salt"],["2 tbsp","olive oil"],["2.5 L","water"],["1 bunch","coriander, chopped"]],
+    steps:["Big pot, medium heat: oil, chicken, onion, paprika, cinnamon and pepper. Stir for 8 minutes.","Add the tomato paste and grated tomato and cook 2 minutes.","Add the water, carrots, chickpeas and salt. Cover and simmer 30 minutes.","Lift out the chicken, shred the meat and throw away the skin and bones.","Add the frik and zucchini. Simmer 20 minutes uncovered, stirring every few minutes so the frik doesn't stick.","Put the chicken back and add the mint and coriander. It should be a thick soup, and it thickens more as it cools."]
+  },
+  "paprika-tray": {
+    name:"Paprika chicken, potatoes & carrots", short:"Paprika chicken", kind:"tray", week:1, serves:4, temp:"210°C (gas 7)",
+    time:"15 min hands-on · 50 min oven", where:"Oven, 2 trays",
+    store:"Fridge 4 days · Don't freeze (the potatoes go grainy)",
+    reheat:"Microwave 2 min, or air fryer 180°C for 6–8 min to make it crisp again.",
+    ing:[["4","chicken legs or thighs, bone-in (~1.1 kg)"],["800 g","potatoes, cut in wedges"],["3","carrots, cut in sticks"],["1","zucchini, in chunks"],["1","sweet pepper (not hot), in strips"],["4 tbsp","olive oil"],["2 tsp","sweet paprika"],["1 tsp","cumin"],["½ tsp","turmeric"],["1 tsp","dried thyme"],["1½ tsp","salt"],["½ tsp","black pepper"]],
+    steps:["Oven to 210°C (gas 7). Line 2 trays with baking paper.","In a big bowl, mix the oil, spices and salt. Toss the chicken and vegetables in it until everything is coated.","Spread in one layer, using both trays so nothing is crowded (crowded vegetables steam instead of roasting). Chicken skin-side up.","Roast 45–50 minutes and swap the trays halfway. It's done when the chicken juices run clear and the potatoes are golden."]
+  },
+  "tajine-chickpea": {
+    name:"Chicken & chickpea tajine", short:"Chicken tajine", local:"Tajine djej bel hummus", kind:"stew", week:2, serves:6,
+    time:"15 min hands-on · 15 min pressure", where:"Multicooker",
+    store:"Fridge 3 days · Freezer 3 months",
+    reheat:"Microwave 3 min with the lid ajar. Sprinkle 1 tbsp water over the couscous first.",
+    ing:[["1.5 kg","chicken legs (6 pieces), or 1 kg boneless thighs"],["1","onion, grated"],["2 cloves","garlic, grated (optional)"],["3 tbsp","olive oil"],["1 tsp","ginger powder"],["1 tsp","turmeric"],["1 tsp","sweet paprika"],["½ tsp","cinnamon"],["½ tsp","black pepper"],["1½ tsp","salt"],["400 g","cooked chickpeas (1 can, or 150 g dried and soaked)"],["4","carrots, in chunks"],["2","zucchini, in chunks"],["500 ml","water (800 ml if using the stove)"],["handful","coriander and parsley"],["to serve","360 g couscous (see Couscous)"]],
+    steps:["Sauté mode: oil, chicken, onion, garlic, spices and salt. Stir for 8 minutes.","Add the chickpeas, carrots and water. Pressure 15 minutes, then quick release.","Add the zucchini. Sauté mode with the lid off for 6–8 minutes, until the zucchini is tender and the sauce has reduced.","Stir in the herbs. Put couscous in each container and add the tajine on top."],
+    alt:"On the stove: covered pot for 45 minutes, adding the zucchini for the last 15."
+  },
+  "lentil-soup": {
+    name:"Red lentil & carrot soup", short:"Lentil soup", local:"Chorba adès", kind:"pot", week:2, serves:6,
+    time:"15 min hands-on · 25 min simmer", where:"Big pot + hand blender",
+    store:"Fridge 4 days · Freezer 3 months",
+    reheat:"Splash of water, microwave 3 min. Eat with bread and a spoon of yogurt. Add a boiled egg or cheese for protein.",
+    ing:[["400 g","red lentils, rinsed"],["1","onion, chopped (blended in, you won't taste it raw)"],["3","carrots, chopped"],["1","medium potato, chopped"],["2 tbsp","olive oil"],["1 tsp","cumin"],["½ tsp","turmeric"],["1 tsp","sweet paprika"],["1","chicken stock cube"],["2.2 L","water"],["1 tsp","salt (taste first, the cube is salty)"]],
+    steps:["Big pot: oil and onion for 5 minutes, until soft but not brown.","Add the carrots, potato and spices and stir for 1 minute.","Add the lentils, water and stock cube. Bring to a boil, then simmer partly covered for 25 minutes, stirring now and then.","Blend smooth with the hand blender. Taste and add salt."]
+  },
+  "kefta-tray": {
+    name:"Baked kefta with potato wedges", short:"Kefta tray", local:"Kefta au four", kind:"tray", week:2, serves:4, temp:"210°C (gas 7)",
+    time:"25 min hands-on · 45 min oven", where:"Oven, 2 trays",
+    store:"Fridge 4 days",
+    reheat:"Microwave 2 min or air fryer 180°C for 6 min. Yogurt sauce cold on the side.",
+    ing:[["700 g","minced beef (viande hachée)"],["1 small","onion, very finely grated and squeezed dry (optional, it cooks into the meat)"],["handful","parsley, finely chopped"],["1 tsp","cumin"],["1 tsp","sweet paprika"],["½ tsp","cinnamon"],["1 tsp","salt"],["½ tsp","black pepper"],["1","egg"],["3 tbsp","breadcrumbs or oats"],["800 g","potatoes, wedges"],["2","sweet peppers, in strips"],["1","zucchini, in chunks"],["3 tbsp","olive oil + ½ tsp salt + ½ tsp paprika for the vegetables"],["sauce","2 pots plain yogurt, ½ cucumber grated and squeezed, pinch of salt, ½ tsp dried mint. No garlic"]],
+    steps:["Oven to 210°C. Toss the potatoes and vegetables with oil, salt and paprika on 2 trays. Roast 20 minutes.","Meanwhile, mix all the kefta ingredients with your hands for 1 minute. With wet hands, shape about 18 small sausages.","Add the kefta to the trays. Roast 20–25 minutes more and turn them once.","Stir the yogurt sauce together. It keeps 3 days in the fridge."]
+  },
+  "jelbana": {
+    name:"Peas with beef & carrots", short:"Jelbana", local:"Jelbana", kind:"stew", week:3, serves:6,
+    time:"15 min hands-on · 30 min pressure", where:"Multicooker",
+    store:"Fridge 3 days · Freezer 3 months",
+    reheat:"Microwave 3 min, stir halfway. Bread or rice on the side.",
+    ing:[["600 g","beef chunks (or chicken legs)"],["1","onion, grated"],["3 tbsp","olive oil"],["1 tsp","turmeric"],["1 tsp","sweet paprika"],["½ tsp","cinnamon"],["½ tsp","black pepper"],["1½ tsp","salt"],["3","carrots, in chunks"],["800 g","frozen peas"],["700 ml","water"],["1 bunch","coriander, chopped"]],
+    steps:["Sauté mode: oil, beef, onion, spices and salt. Stir for 8 minutes.","Add the carrots and water. Pressure 25 minutes, then quick release.","Add the frozen peas. Pressure 3 minutes (or simmer 10 minutes on sauté).","Stir in the coriander."],
+    alt:"On the stove: 1 hour covered for the beef, then the peas for the last 15 minutes."
+  },
+  "chorba-beida": {
+    name:"White chicken & chickpea soup", short:"Chorba beida", local:"Chorba beida", kind:"pot", week:3, serves:6,
+    time:"15 min hands-on · 45 min simmer", where:"Big pot, stove",
+    store:"Fridge 3 days · Freezer 3 months",
+    reheat:"Add a good splash of water (the vermicelli soaks up liquid). Microwave 3 min.",
+    ing:[["4","chicken legs (~1 kg)"],["1","onion, grated"],["2 tbsp","butter or olive oil"],["½ tsp","cinnamon"],["½ tsp","black pepper"],["1","chicken stock cube"],["1 tsp","salt"],["400 g","cooked chickpeas"],["2.5 L","water"],["100 g","vermicelli (cheveux d'ange)"],["1 bunch","parsley, chopped"]],
+    steps:["Big pot: butter, chicken, onion, cinnamon and pepper for 6 minutes. Keep it pale, don't brown it.","Add the water, chickpeas, stock cube and salt. Simmer covered for 35 minutes.","Lift out the chicken, shred it and throw away the bones and skin.","Add the vermicelli and cook 8 minutes. Put the chicken back and add the parsley.","The traditional finish is egg yolk and lemon. Skip it, because lemon can bring on heartburn."]
+  },
+  "yogurt-tray": {
+    name:"Yogurt-marinated chicken with rice", short:"Yogurt chicken", local:"Mild, shawarma-style", kind:"tray", week:3, serves:4, temp:"220°C (gas 7–8)",
+    time:"15 min hands-on · 30 min marinate · 30 min oven", where:"Oven, 2 trays",
+    store:"Fridge 4 days",
+    reheat:"Sprinkle 1 tbsp water over the rice, microwave 2 min. Yogurt-mint sauce on the side.",
+    ing:[["1 kg","boneless chicken thighs"],["200 g","plain yogurt"],["2 tbsp","olive oil"],["2 tsp","sweet paprika"],["1 tsp","cumin"],["½ tsp","turmeric"],["½ tsp","cinnamon"],["1 tsp","salt"],["½ tsp","black pepper"],["3","sweet peppers, in strips"],["2","zucchini, half-moons"],["2 tbsp","olive oil + pinch of salt for the vegetables"],["to serve","300 g rice (see Rice) · yogurt with dried mint and salt"]],
+    steps:["Mix the yogurt, oil, spices and salt. Coat the chicken and rest 30 minutes (or overnight on Saturday).","Oven to 220°C. Vegetables with oil and salt on one tray, chicken spread out on the other.","Roast 25–30 minutes, until the chicken has dark edges.","Cook the rice while it roasts. Slice the chicken. Portion rice, chicken and vegetables into containers."]
+  },
+  "zitoune": {
+    name:"Chicken with olives & mushrooms", short:"Tajine zitoune", local:"Tajine zitoune", kind:"stew", week:4, serves:6,
+    time:"20 min hands-on · 15 min pressure", where:"Multicooker",
+    store:"Fridge 3 days · Freezer 3 months",
+    reheat:"Microwave 3 min with 1 tbsp water over the rice.",
+    ing:[["1.5 kg","chicken legs"],["1","onion, grated"],["3 tbsp","olive oil"],["1 tsp","turmeric"],["1 tsp","ginger powder"],["½ tsp","cinnamon"],["½ tsp","black pepper"],["½ tsp","salt (the olives are salty)"],["3","carrots, sliced"],["250 g","mushrooms, quartered (or 1 can)"],["250 g","pitted green olives"],["500 ml","water"],["handful","parsley"],["to serve","360 g rice (see Rice)"]],
+    steps:["Olives: boil 5 minutes in plain water and drain. This takes out the extra salt and bitterness.","Sauté mode: oil, chicken, onion, spices and salt for 8 minutes.","Add the carrots, mushrooms and water. Pressure 15 minutes, then quick release.","Add the olives. Sauté mode with the lid off for 8 minutes to thicken. Taste before adding any salt. Parsley on top."],
+    alt:"On the stove: covered pot for 45 minutes, olives for the last 10."
+  },
+  "gratin": {
+    name:"Chicken & mushroom pasta bake", short:"Pasta gratin", local:"Gratin de pâtes", kind:"pot", week:4, serves:6, temp:"200°C (gas 6)",
+    time:"30 min hands-on · 25 min oven", where:"Oven dish + stove",
+    store:"Fridge 4 days · Freezer 2 months",
+    reheat:"Covered, with a splash of milk: microwave 3 min, or oven 180°C for 15 min.",
+    ing:[["500 g","penne"],["600 g","chicken breast, small cubes"],["1 tbsp","olive oil + ½ tsp sweet paprika + pinch of salt"],["1","zucchini, diced"],["200 g","mushrooms, sliced"],["60 g","butter"],["60 g","flour"],["900 ml","milk"],["1 tsp","salt"],["¼ tsp","black pepper · pinch of nutmeg"],["200 g","grated cheese"]],
+    steps:["Oven to 200°C. Boil the pasta 2 minutes less than the packet says and drain.","Pan: oil, chicken, paprika and salt for 6 minutes. Add the zucchini and mushrooms for 5 more.","Béchamel: melt the butter in a pot and whisk in the flour for 1 minute. Pour in the milk slowly, whisking all the time, and simmer 5 minutes until it's as thick as yogurt. Add salt, pepper and nutmeg.","Mix the pasta, chicken and half the béchamel in a large oven dish. Pour the rest on top and add the cheese.","Bake 25 minutes until golden. Cool, then cut into 6."]
+  },
+  "herb-tray": {
+    name:"Herb drumsticks, sweet potato & green beans", short:"Herb drumsticks", kind:"tray", week:4, serves:4, temp:"210°C (gas 7)",
+    time:"15 min hands-on · 45 min oven", where:"Oven, 2 trays",
+    store:"Fridge 4 days",
+    reheat:"Microwave 2 min, or air fryer 180°C for 6–8 min.",
+    ing:[["8","chicken drumsticks (~1.2 kg)"],["700 g","sweet potatoes (batata hlowa), cubed"],["400 g","green beans, trimmed (fresh or frozen)"],["4 tbsp","olive oil"],["1 tsp","dried thyme (zaatar)"],["1 tsp","sweet paprika"],["1 tbsp","honey"],["1½ tsp","salt"],["½ tsp","black pepper"]],
+    steps:["Oven to 210°C. Toss the drumsticks and sweet potato with oil, thyme, paprika, salt and pepper on 2 trays.","Roast 25 minutes.","Add the green beans (tossed in 1 tsp oil and a pinch of salt) and drizzle the honey over the sweet potatoes.","Roast 20 minutes more. The drumsticks are done when the juices run clear."]
+  },
+  "oats": {
+    name:"Overnight oats jars", short:"Overnight oats", kind:"breakfast", serves:5,
+    time:"10 min · no cooking", where:"5 jars",
+    store:"Fridge 5 days",
+    reheat:"Eat cold, or warm it for 1 min. Add half a banana in the morning.",
+    ing:[["250 g","rolled oats (50 g per jar)"],["750 ml","milk, or half milk half lben"],["5 tbsp","plain yogurt"],["5 tsp","honey"],["1 tsp","cinnamon"],["10","dates, chopped"],["handful","almonds or walnuts"]],
+    steps:["Put 50 g oats in each jar.","Divide the milk, yogurt, honey, cinnamon and dates between the jars.","Close and shake. Into the fridge.","Each morning: add half a banana or a few nuts."]
+  },
+  "muffins": {
+    name:"Egg muffins", short:"Egg muffins", kind:"breakfast", serves:12, temp:"180°C (gas 4)",
+    time:"10 min hands-on · 22 min oven", where:"12-cup muffin tin",
+    store:"Fridge 3 days · Freezer 2 months",
+    reheat:"2 muffins: microwave 45 s or air fryer 170°C for 4 min. Add bread and a piece of fruit.",
+    ing:[["10","eggs"],["100 ml","milk"],["100 g","grated cheese"],["1","sweet pepper, small dice"],["100 g","cachir nature (not the spicy kind), diced, or leftover chicken or mushrooms"],["handful","parsley"],["½ tsp","salt · pinch of pepper"],["1 tbsp","oil for the tin"]],
+    steps:["Oven to 180°C. Oil the tin well, including silicone ones.","Whisk the eggs, milk, salt and pepper.","Divide the pepper, cachir, cheese and parsley between the cups. Pour the egg over until each is ¾ full.","Bake 20–22 minutes until the centres are set. Cool.","6 go in the fridge (Mon–Wed), 6 go in the freezer (Thu, Fri + spare)."]
+  },
+  "energy-balls": {
+    name:"Date & oat energy balls", short:"Energy balls", kind:"snack", serves:16,
+    time:"15 min · no cooking", where:"Hand blender chopper",
+    store:"Fridge 2 weeks",
+    reheat:"2 balls = one snack. Good with tea when you'd otherwise reach for biscuits.",
+    ing:[["200 g","soft dates (deglet nour), pitted"],["100 g","rolled oats"],["60 g","peanut butter or tahini"],["50 g","almonds, walnuts or peanuts"],["pinch","cinnamon"],["1–2 tbsp","water if needed"]],
+    steps:["Pulse the nuts and oats in the chopper.","Add the dates, peanut butter and cinnamon. Blend until it clumps together, adding a little water if it's dry.","Roll into about 16 balls. Keep in a closed box in the fridge."]
+  },
+  "couscous": {
+    name:"Couscous, the fast way", short:"Couscous", kind:"basic", serves:6,
+    time:"5 min", where:"Bowl + kettle",
+    store:"Fridge 4 days · Freezer (with the stew) 3 months",
+    reheat:"Sprinkle with water before microwaving so it doesn't dry out.",
+    ing:[["360 g","medium couscous"],["1 tbsp","olive oil"],["½ tsp","salt"],["420 ml","boiling water"],["1 tbsp","butter"]],
+    steps:["Rub the couscous with the oil and salt in a bowl.","Pour over the boiling water, cover with a plate and wait 5 minutes.","Fluff with a fork and stir in the butter. (Steaming it in a couscoussier tastes better, but this is the weekday version.)"]
+  },
+  "rice": {
+    name:"Rice on the stove", short:"Rice", kind:"basic", serves:6,
+    time:"25 min, mostly waiting", where:"Pot with lid",
+    store:"Fridge 3 days (cool it fast) · Freezer 2 months",
+    reheat:"1 tbsp water on top, microwave covered until steaming.",
+    ing:[["300–360 g","rice (the week tells you how much)"],["2 ×","its weight in water (600–720 ml)"],["1 tbsp","oil"],["½ tsp","salt"]],
+    steps:["Rinse the rice until the water runs clearer.","Bring the rice, water, oil and salt to a boil. Put the lid on and turn to the lowest heat for 15 minutes.","Take off the heat and leave 10 minutes without lifting the lid.","Cool it fast: spread it on a tray and get it into containers and the fridge within 1 hour."]
+  },
+  "eggs": {
+    name:"Boiled eggs for the week", short:"Boiled eggs", kind:"basic", serves:6,
+    time:"12 min", where:"Small pot",
+    store:"Fridge 7 days, unpeeled",
+    reheat:"One egg and a piece of fruit makes a snack.",
+    ing:[["6","eggs"]],
+    steps:["Lower the eggs into boiling water with a spoon.","Boil 10 minutes.","Move them to cold water, then into the fridge with the shells on."]
+  }
+};
+
+/* ------------------------------------------------------------------ */
+/* Four-week rotation                                                  */
+/* ------------------------------------------------------------------ */
+const WEEKS = [
+  { stew:"loubia", pot:"chorba-frik", tray:"paprika-tray", bf:"oats", snack:"energy-balls",
+    carb:null, carbFor:null, carbText:"Bread this week. Slice a baguette, freeze it, and toast slices straight from the freezer.",
+    sat:"Soak the 500 g white beans (and chickpeas, if dried) in a big bowl of water tonight.",
+    shop:[
+      ["Butcher",[["Beef chunks (épaule)","600 g · loubia"],["Chicken legs or thighs, bone-in","8 pieces, ~2 kg · 4 tray, 4 chorba"]]],
+      ["Vegetables",[["Carrots","1 kg"],["Potatoes","1 kg"],["Zucchini","3"],["Sweet peppers (not hot)","2"],["Onions","2"],["Tomato","1"],["Coriander","1 bunch"],["Parsley","1 bunch"]]],
+      ["Fruit",[["Bananas","6"],["Apples, oranges or seasonal fruit","8"]]],
+      ["Dairy & eggs",[["Milk","1 L"],["Plain yogurt","8 pots"],["Eggs","12"],["Cheese","portions or a block"]]],
+      ["Grocery",[["Dried white beans (loubia)","500 g · soak tonight"],["Frik","150 g"],["Chickpeas","1 small can (or 100 g dried)"],["Rolled oats","500 g"],["Dates (deglet nour)","500 g"],["Peanut butter or tahini","1 small jar"],["Almonds, walnuts or peanuts","250 g"]]],
+      ["Bakery",[["Bread","2 baguettes or 2 kesra · freeze half, sliced"]]]
+    ]},
+  { stew:"tajine-chickpea", pot:"lentil-soup", tray:"kefta-tray", bf:"muffins", snack:null,
+    carb:"couscous", carbFor:"stew", carbText:"Couscous (360 g) for the tajine. It takes 5 minutes and needs no cooking.",
+    sat:"Using dried chickpeas? Soak 150 g in water tonight.",
+    shop:[
+      ["Butcher",[["Chicken legs","1.5 kg · tajine"],["Minced beef (viande hachée)","700 g · kefta"]]],
+      ["Vegetables",[["Carrots","1 kg"],["Potatoes","1 kg"],["Zucchini","3"],["Sweet peppers (not hot)","3"],["Onions","3"],["Cucumber","1"],["Parsley","1 bunch"],["Coriander","1 bunch"]]],
+      ["Fruit",[["Bananas","6"],["Apples, oranges or seasonal fruit","8"]]],
+      ["Dairy & eggs",[["Eggs","20 (a tray of 30 covers two weeks)"],["Milk","½ L"],["Plain yogurt","8 pots"],["Grated cheese","100 g"],["Cheese","portions or a block"]]],
+      ["Grocery",[["Red lentils","400 g"],["Medium couscous","500 g"],["Chickpeas","1 can (or 150 g dried)"],["Breadcrumbs (chapelure)","small bag, or use oats"],["Chicken stock cubes","1 box"],["Cachir nature (not spicy)","100 g"],["Nuts","top up"]]],
+      ["Bakery",[["Bread","1 baguette · for soup nights"]]]
+    ]},
+  { stew:"jelbana", pot:"chorba-beida", tray:"yogurt-tray", bf:"oats", snack:"energy-balls",
+    carb:"rice", carbFor:"tray", carbText:"Rice (300 g) for the tray bake. Spread it on a plate so it cools fast.",
+    sat:"Using dried chickpeas? Soak 150 g tonight. Optional: marinate the chicken tonight (step 1 of the tray recipe).",
+    shop:[
+      ["Butcher",[["Beef chunks","600 g · jelbana"],["Chicken legs","~1 kg · chorba"],["Boneless chicken thighs","1 kg · tray"]]],
+      ["Vegetables",[["Carrots","500 g"],["Sweet peppers (not hot)","3"],["Zucchini","2"],["Onions","2"],["Coriander","1 bunch"],["Parsley","1 bunch"]]],
+      ["Frozen",[["Frozen peas (petits pois)","800 g"]]],
+      ["Fruit",[["Bananas","6"],["Apples, oranges or seasonal fruit","8"]]],
+      ["Dairy & eggs",[["Plain yogurt","10 pots · 200 g for the marinade"],["Milk","1 L"],["Eggs","12 (or what's left of the tray)"],["Cheese","portions or a block"]]],
+      ["Grocery",[["Chickpeas","1 can (or 150 g dried)"],["Vermicelli (cheveux d'ange)","100 g"],["Rice","1 kg"],["Rolled oats","top up"],["Dates","500 g"],["Nuts, peanut butter","top up"]]],
+      ["Bakery",[["Bread","2 baguettes · freeze half"]]]
+    ]},
+  { stew:"zitoune", pot:"gratin", tray:"herb-tray", bf:"muffins", snack:null,
+    carb:"rice", carbFor:"stew", carbText:"Rice (360 g) for the tajine zitoune. Spread it on a plate so it cools fast.",
+    sat:"Nothing to soak this week. Check you have flour and butter for the béchamel.",
+    shop:[
+      ["Butcher",[["Chicken legs","1.5 kg · zitoune"],["Chicken breast","600 g · gratin"],["Chicken drumsticks","8, ~1.2 kg · tray"]]],
+      ["Vegetables",[["Carrots","500 g"],["Mushrooms","450 g (or 2 cans)"],["Zucchini","2"],["Sweet potatoes (batata hlowa)","700 g"],["Green beans","400 g (fresh or frozen)"],["Sweet pepper","1 · muffins"],["Onions","2"],["Parsley","1 bunch"]]],
+      ["Fruit",[["Bananas","6"],["Apples, oranges or seasonal fruit","8"]]],
+      ["Dairy & eggs",[["Milk","1.5 L"],["Butter","100 g"],["Grated cheese","300 g"],["Eggs","12"],["Plain yogurt","6 pots"]]],
+      ["Grocery",[["Pitted green olives","250 g"],["Penne","500 g"],["Rice","500 g (if none left)"],["Flour","1 kg (if you have none)"],["Cachir nature (not spicy)","100 g"]]],
+      ["Bakery",[["Bread","1 baguette"]]]
+    ]}
+];
+
+const SNACKS = ["Yogurt + a handful of nuts","Boiled egg + a piece of fruit","@snack","Cheese portion + fruit","Yogurt + 3 dates"];
+
+/* ------------------------------------------------------------------ */
+/* Dates                                                               */
+/* ------------------------------------------------------------------ */
+const START = new Date(2026, 8, 26); // Saturday 26 Sep 2026: first shopping day
+const DAY = 86400000;
+const midnight = d => new Date(d.getFullYear(), d.getMonth(), d.getDate());
+const addDays = (d, n) => new Date(d.getFullYear(), d.getMonth(), d.getDate() + n);
+const iso = d => d.getFullYear() + "-" + String(d.getMonth()+1).padStart(2,"0") + "-" + String(d.getDate()).padStart(2,"0");
+const fmt = (d, o) => d.toLocaleDateString("en-GB", o || {weekday:"short", day:"numeric", month:"short"});
+const NOW = midnight(new Date());
+const DI = Math.round((NOW - START) / DAY);
+const STARTED = DI >= 0;
+const CUR_PW = STARTED ? Math.floor(DI / 7) : 0;
+const rotOf = pw => ((pw % 4) + 4) % 4;
+const CUR_ROT = rotOf(CUR_PW);
+const weekStart = pw => addDays(START, pw * 7);
+const weekKey = pw => iso(weekStart(pw));
+const pwForRot = r => CUR_PW + ((r - CUR_ROT + 4) % 4);
+const DAYNAMES = ["Sat","Sun","Mon","Tue","Wed","Thu","Fri"];
+const range = pw => fmt(weekStart(pw), {weekday:"short", day:"numeric", month:"short"}) + " – " + fmt(addDays(weekStart(pw), 6), {weekday:"short", day:"numeric", month:"short"});
+
+/* ------------------------------------------------------------------ */
+/* State + storage                                                     */
+/* ------------------------------------------------------------------ */
+const S = { checks:{}, freezer:[], mode:"local", db:null, readOnly:false };
+let viewRot = CUR_ROT;
+let recipeFilter = "week";
+const LS_KEY = "sunday-kitchen-v1";
+
+function loadLocal(){
+  try { const j = JSON.parse(localStorage.getItem(LS_KEY) || "null"); if (j) { S.checks = j.checks || {}; S.freezer = j.freezer || []; } } catch(e) {}
+}
+function saveLocal(){
+  try { localStorage.setItem(LS_KEY, JSON.stringify({checks:S.checks, freezer:S.freezer})); } catch(e) {}
+}
+function setSync(text){ document.getElementById("sync").textContent = text; }
+
+const writing = {}, dirty = {};
+async function flushCheck(key){
+  saveLocal();
+  if (S.mode !== "db" || S.readOnly) return;
+  dirty[key] = true;
+  if (writing[key]) return;
+  writing[key] = true;
+  try {
+    while (dirty[key]) {
+      dirty[key] = false;
+      const body = JSON.parse(JSON.stringify(S.checks[key] || {items:{}}));
+      await S.db.doc("checks/" + key).set(body);
+    }
+  } catch(e) { onWriteError(e); }
+  finally { writing[key] = false; }
+}
+function onWriteError(e){
+  if (e && e.code === "invalid_argument") { S.readOnly = true; setSync("View only · changes aren't saved"); }
+  else if (e && e.code === "quota_exceeded") { setSync("Storage full. Remove old freezer rows"); }
+  else setSync("Couldn't save. Try again in a moment");
+}
+function checkDoc(key){ return S.checks[key] || (S.checks[key] = {items:{}}); }
+function isChecked(key, id){ return !!(S.checks[key] && S.checks[key].items && S.checks[key].items[id]); }
+function setChecked(key, id, val){
+  const d = checkDoc(key); d.items = Object.assign({}, d.items);
+  if (val) d.items[id] = true; else delete d.items[id];
+  flushCheck(key); syncChecks();
+}
+const isLight = pw => !!(S.checks[weekKey(pw)] && S.checks[weekKey(pw)].light);
+function setLight(pw, val){
+  const d = checkDoc(weekKey(pw)); d.light = !!val; flushCheck(weekKey(pw)); renderPlanViews();
+}
+const freezerTotal = () => S.freezer.reduce((a, f) => a + (Number(f.portions) || 0), 0);
+
+async function freezerAdd(entry){
+  if (S.mode === "db" && !S.readOnly) {
+    try { await S.db.collection("freezer").add(entry); } catch(e) { onWriteError(e); }
+  } else {
+    S.freezer.push(Object.assign({id:"l" + Date.now() + Math.random().toString(36).slice(2,6)}, entry));
+    saveLocal(); renderFreezer(); renderToday();
+  }
+}
+const fzWriting = {}, fzDirty = {};
+async function freezerSet(id, portions){
+  const item = S.freezer.find(f => f.id === id); if (!item) return;
+  item.portions = Math.max(0, portions);
+  if (item.portions === 0) S.freezer = S.freezer.filter(f => f.id !== id);
+  renderFreezer(); renderToday(); saveLocal();
+  if (S.mode !== "db" || S.readOnly) return;
+  fzDirty[id] = true; if (fzWriting[id]) return; fzWriting[id] = true;
+  try {
+    while (fzDirty[id]) {
+      fzDirty[id] = false;
+      const cur = S.freezer.find(f => f.id === id);
+      if (!cur) { await S.db.doc("freezer/" + id).delete(); break; }
+      await S.db.doc("freezer/" + id).update({portions: cur.portions});
+    }
+  } catch(e) { onWriteError(e); }
+  finally { fzWriting[id] = false; }
+}
+
+/* ------------------------------------------------------------------ */
+/* Plan logic                                                          */
+/* ------------------------------------------------------------------ */
+const REHEAT_ANY = "Thawed in the fridge overnight? Microwave until steaming. Still frozen? Defrost 5 min, then high 2–3 min, stirring.";
+// pday: 0 Sat, 1 Sun, 2 Mon ... 6 Fri
+function planDay(rot, pday, light, pw){
+  const w = WEEKS[rot], st = R[w.stew], po = R[w.pot], tr = R[w.tray], bf = R[w.bf];
+  const out = [];
+  // breakfast
+  if (pday <= 1) out.push({slot:"Breakfast", dish:"Weekend breakfast: eggs, bread, cheese, olive oil, fruit", src:"fresh", how:"You have time today, so cook it fresh."});
+  else if (w.bf === "oats") out.push({slot:"Breakfast", dish:bf.name, src:"fridge", how:bf.reheat, recipe:w.bf});
+  else out.push({slot:"Breakfast", dish:"2 " + bf.short.toLowerCase(), src: pday >= 5 ? "freezer" : "fridge", thaw: pday >= 5, how:bf.reheat, recipe:w.bf});
+
+  const firstWeekend = pw === 0 && pday <= 1;
+  const fz = (label, thaw) => firstWeekend
+    ? {dish:"Simple plate: omelette, bread, cheese, cucumber & tomato with olive oil", src:"fresh", how:"Your freezer fills up on Sunday. Keep today simple."}
+    : {dish:label, src:"freezer", thaw, how:REHEAT_ANY};
+  const fridge = id => ({dish:R[id].name, src:"fridge", how:R[id].reheat, recipe:id});
+
+  const table = {
+    0: {L: fz("Any freezer meal, oldest first", true), D: firstWeekend ? {dish:"Eat out or with family", src:"free", how:"Enjoy it. Tomorrow you cook."} : {dish:"Freezer meal, family, or eat out", src:"freezer", how:REHEAT_ANY}},
+    1: {L: firstWeekend ? fz("", false) : {dish:"Omelette & bread, or a freezer meal", src:"fresh", how:"Keep lunch light, you're cooking later."}, D: {dish:tr.name, src:"fresh", how:"Straight out of the oven, the first portion of this week's tray.", recipe:w.tray}},
+    2: {L: fridge(w.tray), D: light ? fz("Freezer meal (moved last night)", true) : fridge(w.stew)},
+    3: {L: light ? fz("Freezer meal (moved last night)", true) : fridge(w.stew), D: fridge(w.tray)},
+    4: {L: fridge(w.tray), D: light ? fz("Freezer meal (moved last night)", true) : fridge(w.pot)},
+    5: {L: light ? fz("Freezer meal (moved last night)", true) : {dish:po.name, src:"freezer", thaw:true, how:po.reheat, recipe:w.pot},
+        D: light ? fz("Freezer meal (moved last night)", true) : {dish:st.name, src:"freezer", thaw:true, how:st.reheat, recipe:w.stew}},
+    6: {L: light ? fz("Freezer meal (moved last night)", true) : {dish:po.name + " (or swap for any freezer meal)", src:"freezer", thaw:true, how:po.reheat, recipe:w.pot},
+        D: {dish:"Free night", src:"free", how:"Eat out, order in, or cook something fun. It's part of the plan, not a slip."}}
+  };
+  out.push(Object.assign({slot:"Lunch"}, table[pday].L));
+  const snackTxt = pday <= 1 ? "Fruit, yogurt, nuts, whatever's left" : SNACKS[pday - 2].replace("@snack", w.snack ? "2 energy balls" : "3 dates + a few almonds");
+  out.push({slot:"Snack", dish:snackTxt, src:"grab", how: pday <= 1 ? "" : "Mid-afternoon, so you're not starving at dinner.", recipe: (pday === 4 && w.snack) ? w.snack : null});
+  out.push(Object.assign({slot:"Dinner"}, table[pday].D));
+  return out;
+}
+
+function tomorrowOf(pw, pday){ return pday === 6 ? {pw:pw+1, pday:0} : {pw, pday:pday+1}; }
+
+function tasksFor(pw, pday){
+  const w = WEEKS[rotOf(pw)], t = [];
+  if (pday === 0) {
+    const n = freezerTotal();
+    t.push({c:"fresh", html:`<b>Shop for Week ${rotOf(pw)+1}.</b> <button class="linkbtn" data-go="shop">Open the list</button>`});
+    t.push({c:"", html:`<b>Clear the fridge.</b> Eat or bin anything cooked more than 4 days ago.`});
+    if (w.sat) t.push({c:"", html:`<b>Tonight:</b> ${w.sat}`});
+    if (pw > 0 && n >= 14) t.push({c:"frost", html:`<b>Your freezer holds ${n} portions.</b> Make this a light week: only the tray bake and breakfasts tomorrow. <button class="linkbtn" data-go="sunday">Switch it on</button>`});
+    if (pw > 0 && n < 6) t.push({c:"warn", html:`<b>The freezer is low (${n}).</b> Cook the full week tomorrow.`});
+  }
+  if (pday === 1) t.push({c:"", html:`<b>Sunday cook, about 2½ hours.</b> <button class="linkbtn" data-go="sunday">Open the step-by-step</button>`});
+  if (pday === 6) t.push({c:"warn", html:`<b>Fridge check:</b> anything from last Sunday that's still there, eat it today or bin it.`});
+  const tm = tomorrowOf(pw, pday);
+  const move = planDay(rotOf(tm.pw), tm.pday, isLight(tm.pw), tm.pw).filter(s => s.src === "freezer" && s.thaw);
+  if (move.length) t.push({c:"frost", html:`<b>Tonight, 30 seconds:</b> move ${move.length === 1 ? "1 thing" : move.length + " things"} from the freezer to the fridge for tomorrow: ${move.map(m => m.slot.toLowerCase() + " (" + esc(m.dish.replace(/ \(.*\)$/,"")) + ")").join(", ")}.`});
+  return t;
+}
+
+/* ------------------------------------------------------------------ */
+/* Helpers                                                             */
+/* ------------------------------------------------------------------ */
+function esc(s){ return String(s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c])); }
+const SRC_LABEL = {fridge:"Fridge", freezer:"Freezer", fresh:"Cook fresh", free:"Free", grab:"Grab"};
+const chip = src => `<span class="src src-${src}">${SRC_LABEL[src]}</span>`;
+function recipeLink(id, text){ return id ? `<button class="linkbtn" data-recipe="${id}">${esc(text || "Recipe")}</button>` : ""; }
+function ckRow(key, id, label, sub, group){
+  const cid = "ck-" + key + "-" + id;
+  return `<li><label class="ck" for="${cid}"><input type="checkbox" id="${cid}" data-ck="${key}|${id}" ${group ? `data-group="${group}"` : ""} ${isChecked(key, id) ? "checked" : ""}><span>${label}${sub ? `<small>${sub}</small>` : ""}</span></label></li>`;
+}
+function syncChecks(){
+  document.querySelectorAll("input[data-ck]").forEach(el => {
+    const [k, id] = el.dataset.ck.split("|"); el.checked = isChecked(k, id);
+  });
+  document.querySelectorAll("[data-prog]").forEach(el => {
+    const boxes = document.querySelectorAll(`input[data-group="${el.dataset.prog}"]`);
+    let n = 0; boxes.forEach(b => { if (b.checked) n++; });
+    el.textContent = n + "/" + boxes.length;
+  });
+}
+function switcher(){
+  let h = `<div class="switch" role="group" aria-label="Rotation week">`;
+  for (let r = 0; r < 4; r++) {
+    const pw = pwForRot(r);
+    const now = r === CUR_ROT && STARTED;
+    h += `<button class="wk" data-rot="${r}" aria-pressed="${r === viewRot}"><b>Week ${r+1}${now ? " · now" : ""}</b><span>${fmt(weekStart(pw), {day:"numeric", month:"short"})} – ${fmt(addDays(weekStart(pw),6), {day:"numeric", month:"short"})}</span></button>`;
+  }
+  return h + `</div>`;
+}
+function lightToggle(pw){
+  return `<label class="toggle" for="light-${pw}"><input type="checkbox" id="light-${pw}" data-light="${pw}" ${isLight(pw) ? "checked" : ""}> Light week: freezer is full, skip the stew and soup</label>`;
+}
+
+/* ------------------------------------------------------------------ */
+/* Renderers                                                           */
+/* ------------------------------------------------------------------ */
+function renderHeader(){
+  const m = document.getElementById("pill-main"), s = document.getElementById("pill-sub");
+  if (!STARTED) { m.textContent = "Starts Saturday 26 September"; s.textContent = `${-DI} day${-DI === 1 ? "" : "s"} to get set up`; }
+  else { m.textContent = `Week ${CUR_ROT+1} of 4`; s.textContent = range(CUR_PW) + (isLight(CUR_PW) ? " · light week" : ""); }
+}
+
+function renderToday(){
+  const el = document.getElementById("p-today");
+  if (!STARTED) {
+    const setupIds = SETUP.flatMap(g => g[1].map(i => i[0]));
+    const done = setupIds.filter(id => isChecked("setup", id)).length;
+    const w = WEEKS[0];
+    el.innerHTML = `
+      <div class="card hero">
+        <div class="eyebrow">${fmt(NOW, {weekday:"long", day:"numeric", month:"long"})}</div>
+        <h2>Week 1 starts Saturday. This week you get set up.</h2>
+        <p class="muted">Buy the equipment and stock the pantry. <span class="mono">${done}/${setupIds.length}</span> setup items done.</p>
+        <div class="row" style="margin-top:10px"><button class="btn" data-go="start">Open the setup checklist</button><button class="btn ghost" data-go="week">See Week 1</button></div>
+      </div>
+      <div class="grid2">
+        <div class="card">
+          <div class="card-h"><h3>Your first weekend</h3><span class="eyebrow">26–27 Sep</span></div>
+          <ul class="tasks">
+            <li><span class="dot fresh"></span><span><b>Saturday:</b> shop for Week 1 (<button class="linkbtn" data-go="shop">list</button>), then soak the white beans tonight.</span></li>
+            <li><span class="dot"></span><span><b>Sunday:</b> cook ${esc(R[w.stew].short)}, ${esc(R[w.pot].short)}, ${esc(R[w.tray].short)} and overnight oats. <button class="linkbtn" data-go="sunday">Step-by-step</button></span></li>
+            <li><span class="dot frost"></span><span><b>Monday:</b> open the fridge and eat. No cooking until next Sunday.</span></li>
+          </ul>
+        </div>
+        <div class="card">
+          <div class="card-h"><h3>Until then</h3></div>
+          <p class="muted">Don't aim for perfect this week. Eggs, bread, cheese, yogurt, fruit and a rotisserie chicken are fine. The system starts on Saturday.</p>
+        </div>
+      </div>`;
+    return;
+  }
+  const pday = ((DI % 7) + 7) % 7;
+  const slots = planDay(CUR_ROT, pday, isLight(CUR_PW), CUR_PW);
+  const tasks = tasksFor(CUR_PW, pday);
+  const tm = tomorrowOf(CUR_PW, pday);
+  const tomorrow = planDay(rotOf(tm.pw), tm.pday, isLight(tm.pw), tm.pw);
+  const titles = ["Shopping day","Cook day","Monday: just reheat","Tuesday: just reheat","Wednesday: just reheat","Thursday: from the freezer","Friday: free night"];
+  el.innerHTML = `
+    <div class="card hero">
+      <div class="eyebrow">${fmt(NOW, {weekday:"long", day:"numeric", month:"long"})} · Week ${CUR_ROT+1}${isLight(CUR_PW) ? " · light week" : ""}</div>
+      <h2>${titles[pday]}</h2>
+    </div>
+    <div class="grid2">
+      <div class="card">
+        <div class="card-h"><h3>What you eat today</h3></div>
+        <div class="slots">${slots.map(s => `
+          <div class="slot"><div class="when">${s.slot}</div>
+            <div class="what"><span class="dish">${esc(s.dish)}</span>${chip(s.src)}${recipeLink(s.recipe)}</div>
+            ${s.how ? `<div class="how">${esc(s.how)}</div>` : ""}
+          </div>`).join("")}</div>
+      </div>
+      <div style="display:grid;gap:22px">
+        <div class="card">
+          <div class="card-h"><h3>Jobs today</h3></div>
+          ${tasks.length ? `<ul class="tasks">${tasks.map(t => `<li><span class="dot ${t.c}"></span><span>${t.html}</span></li>`).join("")}</ul>` : `<p class="muted">Nothing. Eat, work, and don't think about food.</p>`}
+        </div>
+        <div class="card">
+          <div class="card-h"><h3>Tomorrow</h3><span class="eyebrow">${DAYNAMES[tm.pday]}</span></div>
+          <div class="slots">${tomorrow.filter(s => s.slot !== "Snack").map(s => `<div class="slot"><div class="when">${s.slot}</div><div class="what"><span>${esc(s.dish)}</span>${chip(s.src)}</div></div>`).join("")}</div>
+        </div>
+      </div>
+    </div>`;
+}
+
+function renderWeek(){
+  const el = document.getElementById("p-week");
+  const pw = pwForRot(viewRot), w = WEEKS[viewRot], light = isLight(pw);
+  const todayPd = (STARTED && pw === CUR_PW) ? ((DI % 7) + 7) % 7 : -1;
+  let days = "";
+  for (let d = 0; d < 7; d++) {
+    const slots = planDay(viewRot, d, light, pw);
+    days += `<div class="day ${d === todayPd ? "is-today" : ""}"><div class="day-h"><b>${DAYNAMES[d]}</b><span>${fmt(addDays(weekStart(pw), d), {day:"numeric", month:"short"})}</span></div>` +
+      slots.map(s => `<div class="cell ${s.src}"><i>${s.slot}</i>${s.recipe ? `<button class="linkbtn" data-recipe="${s.recipe}" style="text-align:left;color:inherit;text-decoration-color:var(--line)">${esc(s.dish)}</button>` : esc(s.dish)}</div>`).join("") + `</div>`;
+  }
+  el.innerHTML = `
+    <div class="row">${switcher()}${lightToggle(pw)}</div>
+    <div class="card">
+      <div class="card-h"><div><div class="eyebrow">Week ${viewRot+1} · ${range(pw)}</div><h2>${esc(R[w.stew].short)} · ${esc(R[w.pot].short)} · ${esc(R[w.tray].short)}</h2></div></div>
+      <div class="legend">${chip("fridge")}<span class="small muted">cooked Sunday, reheat</span>${chip("freezer")}<span class="small muted">moved to the fridge the night before</span>${chip("fresh")}<span class="small muted">cook on the day</span>${chip("free")}<span class="small muted">planned night off</span></div>
+    </div>
+    <div class="days">${days}</div>
+    <div class="grid2">
+      <div class="card"><h3>Why it's arranged this way</h3>
+        <p class="muted" style="margin-top:8px">Cooked food is safe in the fridge for 3–4 days, so Monday to Wednesday eat from the fridge. Thursday and Friday meals go into the freezer on Sunday and move to the fridge on Wednesday and Thursday nights. The tray bake only goes in the fridge because roasted potatoes don't freeze well.</p></div>
+      <div class="card"><h3>This week's carbs</h3><p class="muted" style="margin-top:8px">${esc(w.carbText)}</p></div>
+    </div>`;
+}
+
+function sundaySteps(rot, light, pw){
+  const w = WEEKS[rot], st = R[w.stew], po = R[w.pot], tr = R[w.tray], bf = R[w.bf];
+  const potOven = po.kind === "pot" && /Oven/.test(po.where);
+  const s = [];
+  s.push({id:"setup", dur:10, t:"Set up", body:`Oven on to ${tr.temp}. Take out every ingredient, wash the vegetables, fill the sink with hot soapy water. Put on a podcast.`});
+  if (!light) s.push({id:"stew", dur:20, t:"Multicooker: " + st.short, body:`Sauté, then pressure. After that it looks after itself.`, r:w.stew});
+  if (!light) s.push({id:"pot", dur:20, t:(potOven ? "Second oven dish: " : "Big pot: ") + po.short, body: potOven ? `Get it ready while the tray roasts, then bake it on the lower rack.` : `On the stove, while the multicooker runs.`, r:w.pot});
+  s.push({id:"tray", dur:15, t:"Oven: " + tr.short, body:`Into the oven. Set a timer.`, r:w.tray});
+  const carbOn = w.carb && !(light && w.carbFor === "stew");
+  s.push({id:"carb", dur:15, t:"Stove: " + (carbOn ? R[w.carb].short + " + eggs" : "boiled eggs"), body:(carbOn ? w.carbText + " " : "") + "Boil 6 eggs for snacks: 10 minutes, then cold water.", r: carbOn ? w.carb : "eggs"});
+  s.push({id:"bf", dur:15, t:"Breakfasts: " + bf.short, body: w.bf === "oats" ? "Fill 5 jars. No cooking." : "When the oven is free: 180°C, 22 minutes.", r:w.bf});
+  if (w.snack) s.push({id:"snack", dur:15, t:"Snack: " + R[w.snack].short, body:"Blend and roll. Makes about 16.", r:w.snack});
+  s.push({id:"cool", dur:35, t:"Cool down", body:"Spoon everything into open containers and let the steam go (30–45 min, never more than 2 hours out). Wash up meanwhile. Never put a hot pot straight in the fridge."});
+  s.push({id:"portion", dur:15, t:"Portion & label", body:"Follow the fridge and freezer plan below. Write the dish and today's date on masking tape for every freezer box."});
+  if (!light) s.push({id:"log", dur:2, t:"Log the freezer", body:"One tap so the freezer tracker stays right.", log:true});
+  s.push({id:"eat", dur:0, t:"Dinner", body:`Eat the first portion of ${tr.short}. You're done until Saturday.`});
+  let m = 0;
+  s.forEach(x => { x.at = Math.floor(m/60) + ":" + String(m%60).padStart(2,"0"); m += x.dur; });
+  return {steps:s, total:m};
+}
+
+function renderSunday(){
+  const el = document.getElementById("p-sunday");
+  const pw = pwForRot(viewRot), w = WEEKS[viewRot], light = isLight(pw), key = weekKey(pw);
+  const {steps, total} = sundaySteps(viewRot, light, pw);
+  const st = R[w.stew], po = R[w.pot], tr = R[w.tray];
+  const muff = w.bf === "muffins";
+  const logged = isChecked(key, "logged");
+  const fridge = light
+    ? [`${tr.short} ×3`, "Breakfasts" + (muff ? " (6 muffins)" : " (5 jars)"), "6 boiled eggs"]
+    : [`${tr.short} ×3`, `${st.short} ×2`, `${po.short} ×1`, "Breakfasts" + (muff ? " (6 muffins)" : " (5 jars)"), "6 boiled eggs"].concat(w.snack ? ["Energy balls"] : []);
+  const freezer = light
+    ? (muff ? ["6 egg muffins"] : ["Nothing new this week"]).concat(["Tonight: move Monday's dinner to the fridge"])
+    : [`${st.short} ×4 (Thursday dinner + 3 spare)`, `${po.short} ×5 (Thursday + Friday lunch + 3 spare)`].concat(muff ? ["6 egg muffins"] : []);
+  el.innerHTML = `
+    <div class="row">${switcher()}${lightToggle(pw)}</div>
+    <div class="card">
+      <div class="card-h"><div><div class="eyebrow">Sunday ${fmt(addDays(weekStart(pw),1), {day:"numeric", month:"short"})} · about ${Math.floor(total/60)} h ${total%60} min${light ? " · light week" : ""}</div><h2>Cook session, Week ${viewRot+1}</h2></div><span class="prog" data-prog="sun-${key}"></span></div>
+      <p class="muted small" style="margin-bottom:6px">Times are from when you start. The multicooker, stove and oven run at the same time, so you're never waiting for one thing.</p>
+      <ol class="steps">${steps.map(x => {
+        const cid = `ck-${key}-sun-${x.id}`;
+        return `<li class="step"><span class="t">${x.at}</span><input type="checkbox" id="${cid}" data-ck="${key}|sun-${x.id}" data-group="sun-${key}" ${isChecked(key, "sun-" + x.id) ? "checked" : ""} aria-label="${esc(x.t)} done"><label class="body" for="${cid}"><b>${esc(x.t)}</b><span class="muted">${esc(x.body)}</span> ${x.r ? recipeLink(x.r, "Recipe") : ""}${x.log ? `<div class="row" style="margin-top:8px"><button class="btn" data-log="${viewRot}" ${logged ? "disabled" : ""}>${logged ? "Logged in the freezer" : `Add ${st.short} ×4 and ${po.short} ×5 to the freezer`}</button></div>` : ""}</label></li>`;
+      }).join("")}</ol>
+    </div>
+    <div class="card">
+      <div class="card-h"><h3>Where everything goes</h3></div>
+      <div class="where">
+        <div class="f1"><h4>Fridge · eye-level shelf</h4><ul>${fridge.map(x => `<li>${esc(x)}</li>`).join("")}</ul></div>
+        <div class="f2"><h4>Freezer · top shelf</h4><ul>${freezer.map(x => `<li>${esc(x)}</li>`).join("")}</ul></div>
+      </div>
+    </div>`;
+  syncChecks();
+}
+
+function renderShop(){
+  const el = document.getElementById("p-shop");
+  const pw = pwForRot(viewRot), w = WEEKS[viewRot], key = weekKey(pw);
+  const all = `shop-${key}`;
+  el.innerHTML = `
+    <div class="row">${switcher()}</div>
+    <div class="card">
+      <div class="card-h"><div><div class="eyebrow">Saturday ${fmt(weekStart(pw), {day:"numeric", month:"short"})} · Week ${viewRot+1}</div><h2>Shopping list</h2></div><span class="prog" data-prog="${all}"></span></div>
+      <p class="muted small">For one person, Monday to Friday plus the weekend. Spices and oil come from the pantry list in <button class="linkbtn" data-go="start">Start here</button>. ${w.sat ? `<b>Tonight:</b> ${esc(w.sat)}` : ""}</p>
+      <div class="row" style="margin-top:10px"><button class="btn ghost" id="clear-shop" data-clear="${key}">Untick everything</button></div>
+    </div>
+    <div class="rgrid">${w.shop.map((sec, si) => `
+      <div class="card shopsec"><h3>${esc(sec[0])}</h3>
+        <ul class="checks">${sec[1].map((it, ii) => ckRow(key, `shop-${si}-${ii}`, esc(it[0]), esc(it[1]), all)).join("")}</ul>
+      </div>`).join("")}</div>`;
+  syncChecks();
+}
+
+function recipeCard(id){
+  const r = R[id];
+  const kindLabel = {stew:"Multicooker stew", pot:"Second batch", tray:"Tray bake", breakfast:"Breakfast", snack:"Snack", basic:"Basic"}[r.kind];
+  return `<article class="recipe" id="r-${id}">
+    <div><div class="kind">${kindLabel}${r.week ? " · Week " + r.week : ""}</div><h3>${esc(r.name)}</h3>${r.local ? `<div class="local">${esc(r.local)}</div>` : ""}</div>
+    <div class="meta"><span><b>${r.serves}</b> ${r.kind === "breakfast" && id === "muffins" ? "muffins" : r.kind === "snack" ? "balls" : r.kind === "breakfast" ? "jars" : "portions"}</span><span>${esc(r.time)}</span><span>${esc(r.where)}</span></div>
+    <div class="note frost small"><b>Keeps:</b> ${esc(r.store)}<br><b>Reheat:</b> ${esc(r.reheat)}</div>
+    <details id="d-${id}"><summary>Ingredients & steps</summary>
+      <ul class="ing">${r.ing.map(i => `<li><span class="q">${esc(i[0])}</span><span>${esc(i[1])}</span></li>`).join("")}</ul>
+      <ol class="rsteps">${r.steps.map(x => `<li>${esc(x)}</li>`).join("")}</ol>
+      ${r.alt ? `<p class="note small" style="margin-top:10px">${esc(r.alt)}</p>` : ""}
+    </details>
+  </article>`;
+}
+function renderRecipes(){
+  const el = document.getElementById("p-recipes");
+  const w = WEEKS[viewRot];
+  let ids;
+  if (recipeFilter === "week") ids = [w.stew, w.pot, w.tray, w.bf].concat(w.snack ? [w.snack] : []).concat(w.carb ? [w.carb] : []);
+  else if (recipeFilter === "all") ids = Object.keys(R);
+  else ids = Object.keys(R).filter(k => R[k].kind === recipeFilter || (recipeFilter === "breakfast" && R[k].kind === "snack"));
+  const f = (v, l) => `<button class="fchip" data-rf="${v}" aria-pressed="${recipeFilter === v}">${l}</button>`;
+  el.innerHTML = `
+    <div class="row">${switcher()}</div>
+    <div class="card">
+      <div class="card-h"><h2>Recipes</h2><div class="filters">${f("week", "Week " + (viewRot+1))}${f("stew","Stews")}${f("pot","Soups & bakes")}${f("tray","Tray bakes")}${f("breakfast","Breakfast & snacks")}${f("basic","Basics")}${f("all","All")}</div></div>
+      <p class="muted small">Every recipe uses sweet paprika and nothing hot. Onion and garlic only go into things that cook for a long time, where they melt away. Leave them out if you like. Multicooker buttons differ between models: "Pressure" might be called Meat or Stew on yours. If yours has no pressure setting, use the stove times.</p>
+    </div>
+    <div class="rgrid">${ids.map(recipeCard).join("")}</div>`;
+}
+
+function renderFreezer(){
+  const el = document.getElementById("p-freezer");
+  const n = freezerTotal();
+  const status = n < 6 ? ["low","Low: cook the full week"] : n >= 14 ? ["full","Full: take a light week"] : ["ok","Healthy"];
+  const pos = Math.min(n, 20) / 20 * 100;
+  const items = S.freezer.slice().sort((a, b) => String(a.frozen).localeCompare(String(b.frozen)));
+  const opts = Object.keys(R).filter(k => R[k].kind === "stew" || R[k].kind === "pot").map(k => `<option value="${k}">${esc(R[k].name)}</option>`).join("");
+  const pw = STARTED ? CUR_PW : 0, key = weekKey(pw), w = WEEKS[rotOf(pw)];
+  const logged = isChecked(key, "logged");
+  el.innerHTML = `
+    <div class="grid2">
+      <div class="card meter">
+        <div class="eyebrow">Ready meals in the freezer</div>
+        <div class="row" style="align-items:baseline"><span class="big mono">${n}</span><span class="muted">portions</span><span class="status ${status[0]}">${status[1]}</span></div>
+        <div class="meter-bar" role="img" aria-label="${n} portions on a scale of 0 to 20"><span class="z1"></span><span class="z2"></span><span class="z3"></span><span class="meter-mark" style="left:${pos}%"></span></div>
+        <div class="meter-scale"><span>0–5 low</span><span>6–13 healthy</span><span>14+ light week</span></div>
+        <p class="muted small">A full week adds about 9 portions and you eat about 6, so the freezer slowly fills up. When it reaches 14, take a light week: cook only the tray bake and breakfasts, which takes about an hour.</p>
+      </div>
+      <div class="card">
+        <div class="card-h"><h3>Add to the freezer</h3></div>
+        <div class="row" style="margin-bottom:14px"><button class="btn" data-log="${rotOf(pw)}" ${logged ? "disabled" : ""}>${logged ? `Week ${rotOf(pw)+1} batch logged` : `Log Week ${rotOf(pw)+1} batch: ${R[w.stew].short} ×4, ${R[w.pot].short} ×5`}</button></div>
+        <form class="form" id="fz-form">
+          <label for="fz-dish">Dish<select id="fz-dish">${opts}<option value="_other">Something else…</option></select></label>
+          <label for="fz-other" id="fz-other-wrap" hidden>Name<input id="fz-other" placeholder="e.g. Mum's couscous"></label>
+          <label for="fz-n">Portions<input id="fz-n" type="number" min="1" max="20" value="2"></label>
+          <label for="fz-date">Frozen on<input id="fz-date" type="date" value="${iso(NOW)}"></label>
+          <button class="btn" type="submit">Add</button>
+        </form>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-h"><h3>What's in there</h3><span class="eyebrow">oldest first, eat from the top</span></div>
+      ${items.length ? `<ul class="fz-list">${items.map(f => {
+        const age = Math.round((NOW - midnight(new Date(String(f.frozen) + "T00:00:00"))) / DAY);
+        const old = age > 75;
+        return `<li><div><div class="fz-name">${esc(f.name)}</div><div class="fz-age ${old ? "old" : ""}">frozen ${esc(f.frozen)}${isFinite(age) ? ` · ${age <= 0 ? "today" : age + " day" + (age === 1 ? "" : "s") + " ago"}` : ""}${old ? " · eat this soon" : ""}</div></div>
+          <div class="stepper"><button type="button" data-fz="${esc(f.id)}" data-d="-1" aria-label="Took one out of ${esc(f.name)}">−</button><output>${Number(f.portions)}</output><button type="button" data-fz="${esc(f.id)}" data-d="1" aria-label="Add one ${esc(f.name)}">+</button></div></li>`;
+      }).join("")}</ul>` : `<div class="empty">Empty for now. After your first Sunday cook, tap <b>Log batch</b> and your stew and soup portions show up here.</div>`}
+    </div>`;
+}
+
+const SETUP = [
+  ["Buy: equipment", [
+    ["eq-micro","Microwave","The biggest upgrade. Every reheat becomes 2 minutes. Without one everything still works on the stove, it just takes 5–7 minutes."],
+    ["eq-cont","15 food containers, all the same size (~750 ml)","Freezer- and microwave-safe, with lids. Matching sizes stack neatly on the freezer shelves."],
+    ["eq-jars","5 jars with lids (~400 ml)","For overnight oats. Clean jam jars work."],
+    ["eq-label","Masking tape + permanent marker","Every freezer box gets the dish name and date."],
+    ["eq-trays","2 baking trays + baking paper",""],
+    ["eq-muffin","12-cup muffin tin","Silicone is easiest to get the muffins out of."],
+    ["eq-pot","Big pot, about 8 L (marmite)","For the soups."],
+    ["eq-blender","Hand blender with a chopper bowl (mixeur plongeant)","For lentil soup and energy balls."],
+    ["eq-knife","Sharp chef's knife, large cutting board, peeler, grater",""],
+    ["eq-spoons","Measuring spoons + a 1 L measuring jug","The recipes use tsp, tbsp and ml."]
+  ]],
+  ["Stock once: pantry", [
+    ["pa-oil","Olive oil, 1 L",""],
+    ["pa-spices","Spices","Salt, black pepper, cumin, sweet paprika (paprika douce, not \"fort\"), turmeric, cinnamon, ginger powder, dried thyme, dried mint, bay leaves."],
+    ["pa-basics","Tomato paste, chicken stock cubes, honey, flour",""]
+  ]],
+  ["Get the kitchen ready", [
+    ["ki-freezer","Empty and wipe the freezer, then give each shelf a job","Top: ready meals. Middle: bread & breakfasts. Bottom: raw meat & frozen vegetables."],
+    ["ki-fridge","Clean the fridge and keep one eye-level shelf for this week's meals",""],
+    ["ki-alarms","Set repeating phone alarms","Sat 10:00 \"Shop\" · Sun 15:00 \"Cook\" · Wed & Thu 21:00 \"Move freezer meals\"."]
+  ]]
+];
+
+function renderStart(){
+  const el = document.getElementById("p-start");
+  const rh = [["Sat","Shop","r-shop"],["Sun","Cook ~2½ h","r-cook"],["Mon","Fridge","r-fridge"],["Tue","Fridge","r-fridge"],["Wed","Fridge · move Thu meals at night","r-fridge"],["Thu","Freezer","r-freezer"],["Fri","Freezer · free dinner","r-free"]];
+  el.innerHTML = `
+    <div class="card">
+      <div class="card-h"><div><div class="eyebrow">How it works</div><h2>Cook once a week and reheat the rest.</h2></div></div>
+      <div class="rhythm">${rh.map(r => `<div class="${r[2]}"><b>${r[0]}</b><span>${r[1]}</span></div>`).join("")}</div>
+      <p class="muted" style="margin-top:14px">Every Sunday you make three things at the same time: a stew in the multicooker, a soup or bake on the stove or in the oven, and a tray bake in the oven. You also make breakfasts and snacks. Stews and soups make 6 portions each. You eat some this week, and the rest builds up a freezer stock that gives you variety and the odd week off. The plan repeats every four weeks.</p>
+    </div>
+    <div class="grid2">
+      <div class="card">
+        <div class="card-h"><h3>Setup checklist</h3><span class="prog" data-prog="setup-all"></span></div>
+        ${SETUP.map(g => `<div class="eyebrow" style="margin:14px 0 2px">${esc(g[0])}</div><ul class="checks">${g[1].map(i => ckRow("setup", i[0], esc(i[1]), esc(i[2]), "setup-all")).join("")}</ul>`).join("")}
+      </div>
+      <div style="display:grid;gap:22px">
+        <div class="card">
+          <div class="card-h"><h3>Built around you</h3></div>
+          <div class="prefs"><span>Halal</span><span>No raw onion or garlic</span><span>No vinegar</span><span>Mild, never spicy</span><span>Algerian markets</span><span>Works from home</span></div>
+          <p class="muted small" style="margin-top:10px">Salads are cucumber, tomato and pepper with olive oil and salt, or a yogurt-mint sauce. No vinaigrette anywhere.</p>
+        </div>
+        <div class="card">
+          <div class="card-h"><h3>Food safety, the short version</h3></div>
+          <ul class="rules">
+            <li>Cooked food lasts <b>4 days</b> in the fridge at most. That's why Thursday and Friday meals come from the freezer.</li>
+            <li>Cool food within <b>2 hours</b> (rice within 1). Spread it out in open containers. A hot pot in the fridge warms everything around it.</li>
+            <li>Thaw in the <b>fridge overnight</b>, never on the counter.</li>
+            <li>Reheat until it's steaming all the way through, and only reheat once.</li>
+            <li>Label every freezer box and eat it within <b>3 months</b>.</li>
+          </ul>
+        </div>
+        <div class="card">
+          <div class="card-h"><h3>Easy on heartburn</h3></div>
+          <ul class="rules">
+            <li>Sweet paprika only. No harissa, no chili, no spicy cachir.</li>
+            <li>Tomato is kept low because it's acidic, and carrots in the stews soften it.</li>
+            <li>Roasted and baked, not deep-fried.</li>
+            <li>Try to finish dinner 2–3 hours before bed. With the side hustle, set a fixed dinner time and keep late snacks small (yogurt, banana).</li>
+            <li>Have coffee after food, not on an empty stomach.</li>
+            <li>If heartburn happens several times a week, see a doctor. It's common and treatable.</li>
+          </ul>
+        </div>
+      </div>
+    </div>`;
+  syncChecks();
+}
+
+function renderPlanViews(){ renderHeader(); renderToday(); renderWeek(); renderSunday(); }
+function renderAll(){ renderPlanViews(); renderShop(); renderRecipes(); renderFreezer(); renderStart(); }
+
+/* ------------------------------------------------------------------ */
+/* Tabs + events                                                       */
+/* ------------------------------------------------------------------ */
+const TABS = ["today","week","sunday","shop","recipes","freezer","start"];
+function showTab(name){
+  if (!TABS.includes(name)) name = "today";
+  TABS.forEach(t => {
+    document.getElementById("p-" + t).hidden = t !== name;
+    const b = document.getElementById("tab-" + t);
+    b.setAttribute("aria-selected", String(t === name));
+  });
+  try { history.replaceState(null, "", "#" + name); } catch(e) {}
+  try { localStorage.setItem("sk-tab", name); } catch(e) {}
+}
+function openRecipe(id){
+  const r = R[id]; if (!r) return;
+  if (r.week) viewRot = r.week - 1;
+  recipeFilter = r.week ? "week" : (r.kind === "snack" ? "breakfast" : r.kind);
+  renderRecipes(); renderWeek(); renderSunday(); renderShop();
+  showTab("recipes");
+  const d = document.getElementById("d-" + id); if (d) d.open = true;
+  const a = document.getElementById("r-" + id); if (a) a.scrollIntoView({block:"start"});
+}
+let clearArm = null;
+document.addEventListener("click", e => {
+  const t = e.target.closest("[data-tab],[data-go],[data-rot],[data-recipe],[data-rf],[data-log],[data-fz],[data-clear]");
+  if (!t) return;
+  if (t.dataset.tab) showTab(t.dataset.tab);
+  else if (t.dataset.go) { showTab(t.dataset.go); window.scrollTo(0, 0); }
+  else if (t.dataset.rot) { viewRot = Number(t.dataset.rot); renderWeek(); renderSunday(); renderShop(); renderRecipes(); }
+  else if (t.dataset.recipe) openRecipe(t.dataset.recipe);
+  else if (t.dataset.rf) { recipeFilter = t.dataset.rf; renderRecipes(); }
+  else if (t.dataset.log) {
+    const rot = Number(t.dataset.log), key = weekKey(pwForRot(rot)), w = WEEKS[rot];
+    if (isChecked(key, "logged")) return;
+    const d = iso(NOW);
+    setChecked(key, "logged", true);
+    freezerAdd({name:R[w.stew].name, recipe:w.stew, portions:4, frozen:d}).then(() => freezerAdd({name:R[w.pot].name, recipe:w.pot, portions:5, frozen:d}));
+    renderSunday(); renderFreezer();
+  }
+  else if (t.dataset.fz) {
+    const f = S.freezer.find(x => x.id === t.dataset.fz);
+    if (f) freezerSet(f.id, Number(f.portions) + Number(t.dataset.d));
+  }
+  else if (t.dataset.clear) {
+    if (clearArm !== t.dataset.clear) { clearArm = t.dataset.clear; t.textContent = "Tap again to untick all"; setTimeout(() => { if (clearArm) { clearArm = null; const b = document.getElementById("clear-shop"); if (b) b.textContent = "Untick everything"; } }, 3000); return; }
+    clearArm = null;
+    const d = checkDoc(t.dataset.clear); const items = Object.assign({}, d.items);
+    Object.keys(items).forEach(k => { if (k.startsWith("shop-")) delete items[k]; });
+    d.items = items; flushCheck(t.dataset.clear); syncChecks();
+    t.textContent = "Untick everything";
+  }
+});
+document.addEventListener("change", e => {
+  const el = e.target;
+  if (el.dataset && el.dataset.ck) { const [k, id] = el.dataset.ck.split("|"); setChecked(k, id, el.checked); }
+  else if (el.dataset && el.dataset.light) setLight(Number(el.dataset.light), el.checked);
+  else if (el.id === "fz-dish") document.getElementById("fz-other-wrap").hidden = el.value !== "_other";
+});
+document.addEventListener("submit", e => {
+  if (e.target.id !== "fz-form") return;
+  e.preventDefault();
+  const v = document.getElementById("fz-dish").value;
+  const name = v === "_other" ? document.getElementById("fz-other").value.trim() : R[v].name;
+  const n = Math.max(1, Math.min(20, parseInt(document.getElementById("fz-n").value, 10) || 1));
+  const date = document.getElementById("fz-date").value || iso(NOW);
+  if (!name) { document.getElementById("fz-other").focus(); return; }
+  freezerAdd({name, recipe: v === "_other" ? null : v, portions:n, frozen:date});
+});
+
+/* ------------------------------------------------------------------ */
+/* Boot                                                                */
+/* ------------------------------------------------------------------ */
+loadLocal();
+renderAll();
+let startTab = (location.hash || "").slice(1);
+if (!TABS.includes(startTab)) { try { startTab = localStorage.getItem("sk-tab") || ""; } catch(e) {} }
+showTab(TABS.includes(startTab) ? startTab : (STARTED ? "today" : "start"));
+
+(async () => {
+  const db = window.claude && window.claude.use ? await window.claude.use("db").catch(() => null) : null;
+  if (!db) return;
+  S.db = db; S.mode = "db"; setSync("Synced across your devices");
+  let lightSig = "";
+  db.collection("checks").onSnapshot(snap => {
+    const c = {};
+    snap.docs.forEach(d => { const b = d.data(); if (b) c[d.id] = JSON.parse(JSON.stringify(b)); });
+    S.checks = c; saveLocal();
+    const sig = Object.keys(c).filter(k => c[k].light).sort().join(",");
+    if (sig !== lightSig) { lightSig = sig; renderPlanViews(); }
+    renderHeader(); syncChecks();
+    const setupOpen = !STARTED; if (setupOpen) renderToday();
+    renderFreezer();
+  }, () => setSync("Offline · saved on this device"));
+  db.collection("freezer").onSnapshot(snap => {
+    S.freezer = snap.docs.map(d => Object.assign({id:d.id}, d.data()));
+    saveLocal(); renderFreezer(); renderToday();
+  }, () => setSync("Offline · saved on this device"));
+})();
+</script>
