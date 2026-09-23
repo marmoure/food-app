@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import { DEFAULT_PROFILE } from '../domain/nutrition/targets';
 import { memoryAdapter } from './adapters';
 import { emptyData, parseAppData } from './schema';
 import { AppStore, BATCH_LOGGED_ITEM } from './store';
@@ -79,6 +80,13 @@ describe('AppStore', () => {
     expect(store.getSnapshot().data.freezer).toEqual([]);
   });
 
+  it('saves the profile', async () => {
+    const { store, adapter } = setup();
+    store.setProfile({ ...DEFAULT_PROFILE, weightKg: 79 });
+    await store.flush();
+    expect(adapter.saved?.profile?.weightKg).toBe(79);
+  });
+
   it('reports a failed save', async () => {
     const store = new AppStore({
       load: async () => null,
@@ -93,6 +101,15 @@ describe('AppStore', () => {
 });
 
 describe('parseAppData', () => {
+  it('keeps a valid profile and drops an invalid one', () => {
+    expect(parseAppData({ version: 1, profile: DEFAULT_PROFILE })?.profile).toEqual(
+      DEFAULT_PROFILE,
+    );
+    expect(
+      parseAppData({ version: 1, profile: { ...DEFAULT_PROFILE, weightKg: -5 } })?.profile,
+    ).toBeUndefined();
+  });
+
   it('rejects unknown versions and non-objects', () => {
     expect(parseAppData(null)).toBeNull();
     expect(parseAppData({ version: 2 })).toBeNull();

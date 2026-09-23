@@ -20,7 +20,9 @@ const PREFERENCES = [
   'No raw onion or garlic',
   'No vinegar',
   'Mild, never spicy',
-  'Algerian markets',
+  'About 1,700 kcal a day',
+  '130 g protein',
+  'Electric cutter for prep',
   'Works from home',
 ];
 
@@ -46,9 +48,9 @@ export function StartView() {
         <p className="muted" style={{ marginTop: 14 }}>
           Every Sunday you make three things at the same time: a stew in the multicooker, a soup or
           bake on the stove or in the oven, and a tray bake in the oven. You also make breakfasts
-          and snacks. Stews and soups make 6 portions each. You eat some this week, and the rest
-          builds up a freezer stock that gives you variety and the odd week off. The plan repeats
-          every four weeks.
+          and snacks. The electric cutter slices and grates all the vegetables in one go. Stews and
+          soups make 6 portions each. You eat some this week, and the rest builds up a freezer stock
+          that gives you variety and the odd week off. The plan repeats every four weeks.
         </p>
       </section>
       <div className="grid2">

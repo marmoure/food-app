@@ -45,8 +45,8 @@ describe('freezer', () => {
     expect(batchEntries(0, '2026-09-27')).toEqual([
       { name: 'Loubia with beef', recipeId: 'loubia', portions: 4, frozenOn: '2026-09-27' },
       {
-        name: 'Chorba frik with chicken',
-        recipeId: 'chorba-frik',
+        name: 'Beef & lentil bolognese',
+        recipeId: 'bolognese',
         portions: 5,
         frozenOn: '2026-09-27',
       },

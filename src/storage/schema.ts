@@ -1,4 +1,5 @@
 import type { FreezerItem } from '../domain/freezer';
+import type { Activity, Goal, Profile, Sex } from '../domain/nutrition/targets';
 import { isRecipeId } from '../domain/recipes';
 
 /** Ticks for one checklist scope: a plan week (keyed by its Saturday) or "setup". */
@@ -12,6 +13,8 @@ export interface AppData {
   version: 1;
   checklists: Record<string, ChecklistState>;
   freezer: FreezerItem[];
+  /** Body details for nutrition targets. Absent until edited: DEFAULT_PROFILE applies. */
+  profile?: Profile;
 }
 
 export const SETUP_SCOPE = 'setup';
@@ -46,6 +49,31 @@ function parseFreezerItem(v: unknown): FreezerItem | null {
   };
 }
 
+const SEXES: readonly Sex[] = ['male', 'female'];
+const ACTIVITIES: readonly Activity[] = ['sedentary', 'light', 'moderate', 'active'];
+const GOALS: readonly Goal[] = ['lose', 'maintain', 'gain'];
+
+const inRange = (v: unknown, min: number, max: number): v is number =>
+  typeof v === 'number' && Number.isFinite(v) && v >= min && v <= max;
+
+export function parseProfile(v: unknown): Profile | null {
+  if (!isObject(v)) return null;
+  const { sex, age, heightCm, weightKg, activity, goal } = v;
+  if (!SEXES.includes(sex as Sex) || !ACTIVITIES.includes(activity as Activity)) return null;
+  if (!GOALS.includes(goal as Goal)) return null;
+  if (!inRange(age, 14, 100) || !inRange(heightCm, 120, 230) || !inRange(weightKg, 35, 250)) {
+    return null;
+  }
+  return {
+    sex: sex as Sex,
+    age,
+    heightCm,
+    weightKg,
+    activity: activity as Activity,
+    goal: goal as Goal,
+  };
+}
+
 /**
  * Validates untrusted stored data. Drops anything malformed instead of throwing,
  * so one bad entry can't lock someone out of the app.
@@ -65,5 +93,7 @@ export function parseAppData(raw: unknown): AppData | null {
       if (parsed) data.freezer.push(parsed);
     }
   }
+  const profile = parseProfile(raw.profile);
+  if (profile) data.profile = profile;
   return data;
 }

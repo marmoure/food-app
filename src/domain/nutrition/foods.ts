@@ -1,0 +1,244 @@
+import type { Macros } from './macros';
+
+/**
+ * Nutrition per 100 g, as bought (raw, dry, bone-in where noted), rounded from USDA
+ * FoodData Central / CIQUAL reference values. Carbs are total carbohydrate including fibre.
+ * Estimates for planning, not lab values: brands and cuts vary by ±10%.
+ */
+export const FOODS = {
+  // Meat & eggs
+  'beef-chunks': {
+    name: 'Beef shoulder, lean, raw',
+    kcal: 150,
+    protein: 20.5,
+    carbs: 0,
+    fat: 7.5,
+    fiber: 0,
+  },
+  'beef-mince': {
+    name: 'Lean beef mince (5–10% fat), raw',
+    kcal: 160,
+    protein: 20.5,
+    carbs: 0,
+    fat: 8.5,
+    fiber: 0,
+  },
+  'chicken-leg': {
+    name: 'Chicken leg, skinless, bone-in, as bought',
+    kcal: 90,
+    protein: 15,
+    carbs: 0,
+    fat: 3.2,
+    fiber: 0,
+  },
+  'chicken-thigh': {
+    name: 'Chicken thigh, boneless skinless, raw',
+    kcal: 121,
+    protein: 19.7,
+    carbs: 0,
+    fat: 4.1,
+    fiber: 0,
+  },
+  'chicken-breast': {
+    name: 'Chicken breast, raw',
+    kcal: 110,
+    protein: 23,
+    carbs: 0,
+    fat: 1.5,
+    fiber: 0,
+  },
+  'chicken-drumstick': {
+    name: 'Chicken drumstick, skinless, bone-in, as bought',
+    kcal: 85,
+    protein: 13.5,
+    carbs: 0,
+    fat: 3,
+    fiber: 0,
+  },
+  'turkey-slices': {
+    name: 'Turkey breast slices (blanc de dinde)',
+    kcal: 105,
+    protein: 19,
+    carbs: 2,
+    fat: 2.5,
+    fiber: 0,
+  },
+  egg: { name: 'Egg', kcal: 143, protein: 12.6, carbs: 0.7, fat: 9.5, fiber: 0 },
+  sardines: {
+    name: 'Sardines in olive oil, drained',
+    kcal: 208,
+    protein: 24.6,
+    carbs: 0,
+    fat: 11.5,
+    fiber: 0,
+  },
+
+  // Pulses & grains (dry unless noted)
+  'white-beans': {
+    name: 'White beans, dried',
+    kcal: 337,
+    protein: 22.3,
+    carbs: 60.8,
+    fat: 1.5,
+    fiber: 15.3,
+  },
+  chickpeas: {
+    name: 'Chickpeas, cooked/canned, drained',
+    kcal: 150,
+    protein: 8,
+    carbs: 25,
+    fat: 2.6,
+    fiber: 7,
+  },
+  'red-lentils': {
+    name: 'Red lentils, dried',
+    kcal: 358,
+    protein: 23.9,
+    carbs: 63.1,
+    fat: 2.2,
+    fiber: 10.7,
+  },
+  oats: { name: 'Rolled oats', kcal: 379, protein: 13.2, carbs: 67.7, fat: 6.5, fiber: 10.1 },
+  couscous: { name: 'Couscous, dry', kcal: 376, protein: 12.8, carbs: 77.4, fat: 0.6, fiber: 5 },
+  'couscous-ww': {
+    name: 'Whole-wheat couscous, dry',
+    kcal: 350,
+    protein: 13,
+    carbs: 68,
+    fat: 1.8,
+    fiber: 9,
+  },
+  rice: { name: 'White rice, dry', kcal: 360, protein: 6.8, carbs: 79.3, fat: 0.6, fiber: 1.3 },
+  'pasta-ww': {
+    name: 'Whole-wheat pasta, dry',
+    kcal: 350,
+    protein: 13.5,
+    carbs: 72,
+    fat: 2.5,
+    fiber: 8,
+  },
+  pasta: { name: 'Pasta, dry', kcal: 371, protein: 13, carbs: 75, fat: 1.5, fiber: 3.2 },
+  'flour-ww': {
+    name: 'Whole-wheat flour',
+    kcal: 340,
+    protein: 13.2,
+    carbs: 72,
+    fat: 2.5,
+    fiber: 10.7,
+  },
+  'flour-white': { name: 'White flour', kcal: 364, protein: 10.3, carbs: 76.3, fat: 1, fiber: 2.7 },
+  semolina: { name: 'Fine semolina', kcal: 360, protein: 12.7, carbs: 72.8, fat: 1.1, fiber: 3.9 },
+  'bread-ww': {
+    name: 'Whole-wheat bread (pain complet)',
+    kcal: 250,
+    protein: 12,
+    carbs: 43,
+    fat: 3.5,
+    fiber: 6.5,
+  },
+  breadcrumbs: { name: 'Breadcrumbs', kcal: 395, protein: 13, carbs: 72, fat: 5, fiber: 4.5 },
+
+  // Vegetables
+  carrot: { name: 'Carrot', kcal: 41, protein: 0.9, carbs: 9.6, fat: 0.2, fiber: 2.8 },
+  potato: { name: 'Potato', kcal: 77, protein: 2, carbs: 17.5, fat: 0.1, fiber: 2.2 },
+  'sweet-potato': { name: 'Sweet potato', kcal: 86, protein: 1.6, carbs: 20.1, fat: 0.1, fiber: 3 },
+  zucchini: { name: 'Zucchini', kcal: 17, protein: 1.2, carbs: 3.1, fat: 0.3, fiber: 1 },
+  pepper: { name: 'Sweet pepper', kcal: 28, protein: 1, carbs: 6, fat: 0.3, fiber: 2.1 },
+  onion: { name: 'Onion', kcal: 40, protein: 1.1, carbs: 9.3, fat: 0.1, fiber: 1.7 },
+  tomato: { name: 'Tomato', kcal: 18, protein: 0.9, carbs: 3.9, fat: 0.2, fiber: 1.2 },
+  'tomato-paste': {
+    name: 'Tomato paste',
+    kcal: 82,
+    protein: 4.3,
+    carbs: 18.9,
+    fat: 0.5,
+    fiber: 4.1,
+  },
+  passata: { name: 'Tomato passata', kcal: 35, protein: 1.5, carbs: 7, fat: 0.2, fiber: 1.8 },
+  mushrooms: { name: 'Mushrooms', kcal: 22, protein: 3.1, carbs: 3.3, fat: 0.3, fiber: 1 },
+  'green-beans': { name: 'Green beans', kcal: 31, protein: 1.8, carbs: 7, fat: 0.2, fiber: 2.7 },
+  peas: { name: 'Frozen peas', kcal: 77, protein: 5.2, carbs: 13.6, fat: 0.4, fiber: 4.5 },
+  cucumber: { name: 'Cucumber', kcal: 15, protein: 0.7, carbs: 3.6, fat: 0.1, fiber: 0.5 },
+  lettuce: { name: 'Lettuce', kcal: 15, protein: 1.4, carbs: 2.9, fat: 0.2, fiber: 1.3 },
+  cabbage: { name: 'White cabbage', kcal: 25, protein: 1.3, carbs: 5.8, fat: 0.1, fiber: 2.5 },
+  spinach: { name: 'Spinach', kcal: 23, protein: 2.9, carbs: 3.6, fat: 0.4, fiber: 2.2 },
+  olives: { name: 'Green olives', kcal: 145, protein: 1, carbs: 3.8, fat: 15, fiber: 3.3 },
+
+  // Fruit, sweet, nuts
+  banana: { name: 'Banana', kcal: 89, protein: 1.1, carbs: 22.8, fat: 0.3, fiber: 2.6 },
+  fruit: { name: 'Apple or orange', kcal: 50, protein: 0.6, carbs: 12.5, fat: 0.2, fiber: 2.4 },
+  dates: { name: 'Dates (deglet nour)', kcal: 282, protein: 2.5, carbs: 75, fat: 0.4, fiber: 8 },
+  honey: { name: 'Honey', kcal: 304, protein: 0.3, carbs: 82.4, fat: 0, fiber: 0 },
+  'peanut-butter': {
+    name: 'Peanut butter or tahini',
+    kcal: 590,
+    protein: 23,
+    carbs: 20,
+    fat: 51,
+    fiber: 7,
+  },
+  nuts: {
+    name: 'Almonds / walnuts / peanuts',
+    kcal: 600,
+    protein: 20,
+    carbs: 18,
+    fat: 52,
+    fiber: 8,
+  },
+
+  // Dairy & fats
+  milk: { name: 'Milk, semi-skimmed', kcal: 46, protein: 3.3, carbs: 4.8, fat: 1.5, fiber: 0 },
+  yogurt: { name: 'Plain yogurt', kcal: 61, protein: 3.5, carbs: 4.7, fat: 3.3, fiber: 0 },
+  'greek-yogurt': {
+    name: 'Thick strained yogurt (0–2%)',
+    kcal: 65,
+    protein: 10,
+    carbs: 4,
+    fat: 1,
+    fiber: 0,
+  },
+  lben: { name: 'Lben', kcal: 40, protein: 3.2, carbs: 4.5, fat: 1.1, fiber: 0 },
+  'grated-cheese': {
+    name: 'Grated cheese (emmental/gruyère)',
+    kcal: 390,
+    protein: 28,
+    carbs: 1,
+    fat: 30,
+    fiber: 0,
+  },
+  'cheese-portion': {
+    name: 'Processed cheese portion',
+    kcal: 240,
+    protein: 10,
+    carbs: 6,
+    fat: 19,
+    fiber: 0,
+  },
+  'olive-oil': { name: 'Olive oil', kcal: 884, protein: 0, carbs: 0, fat: 100, fiber: 0 },
+  butter: { name: 'Butter', kcal: 717, protein: 0.9, carbs: 0.1, fat: 81, fiber: 0 },
+} as const satisfies Record<string, { name: string } & Macros>;
+
+export type FoodId = keyof typeof FOODS;
+
+/** An amount of a food, in grams (or ml for liquids, treated as grams). */
+export interface FoodAmount {
+  food: FoodId;
+  grams: number;
+}
+
+/** Typical unit weights, for ingredients counted in pieces. */
+export const UNIT_GRAMS = {
+  egg: 55,
+  onion: 150,
+  carrot: 100,
+  zucchini: 250,
+  pepper: 150,
+  tomato: 130,
+  potato: 200,
+  banana: 120,
+  fruit: 150,
+  date: 8,
+  cheesePortion: 17.5,
+  yogurtPot: 110,
+  breadWedge: 50,
+} as const;

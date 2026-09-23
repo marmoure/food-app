@@ -1,4 +1,5 @@
 import { batchEntries, type FreezerItem, type NewFreezerItem } from '../domain/freezer';
+import type { Profile } from '../domain/nutrition/targets';
 import type { Rotation } from '../domain/types';
 import type { StorageAdapter } from './adapters';
 import { type AppData, type ChecklistState, emptyData } from './schema';
@@ -117,6 +118,12 @@ export class AppStore {
       };
     });
     return true;
+  }
+
+  // Profile ----------------------------------------------------------------
+
+  setProfile(profile: Profile): void {
+    this.updateData((d) => ({ ...d, profile }));
   }
 
   // Internals --------------------------------------------------------------

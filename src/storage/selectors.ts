@@ -1,4 +1,5 @@
 import { weekKey } from '../domain/calendar';
+import { DEFAULT_PROFILE, type Profile } from '../domain/nutrition/targets';
 import type { AppData } from './schema';
 
 export function isChecked(data: AppData, scope: string, itemId: string): boolean {
@@ -11,4 +12,8 @@ export function countChecked(data: AppData, scope: string, itemIds: readonly str
 
 export function isLightWeek(data: AppData, planWeek: number): boolean {
   return data.checklists[weekKey(planWeek)]?.light === true;
+}
+
+export function profileOf(data: AppData): Profile {
+  return data.profile ?? DEFAULT_PROFILE;
 }

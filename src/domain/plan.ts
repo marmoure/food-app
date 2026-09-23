@@ -1,7 +1,17 @@
 import { nextDay, rotationOf } from './calendar';
 import { freezerStatus } from './freezer';
 import { RECIPES } from './recipes';
-import { WEEKDAY_SNACKS, rotationWeek } from './rotation';
+import {
+  SARDINE_PLATE,
+  SIMPLE_PLATE,
+  type SimpleMeal,
+  WEEKDAY_SNACKS,
+  WEEKEND_BREAKFAST,
+  WEEKEND_SNACK,
+  WEEK_SNACK_FALLBACK,
+  WEEK_SNACK_SIDE,
+  rotationWeek,
+} from './rotation';
 import type { MealSlot, PlanDay, RecipeId, Rotation } from './types';
 
 const REHEAT_FROM_FREEZER =
@@ -17,12 +27,20 @@ export interface DayContext {
 
 type Meal = Omit<MealSlot, 'slot'>;
 
+const simple = (m: SimpleMeal, how: string, source: Meal['source'] = 'fresh'): Meal => ({
+  dish: m.name,
+  source,
+  how,
+  extras: m.amounts,
+});
+
 /**
  * What to eat on a given day of the plan.
  *
  * Mon–Wed eat from the fridge (cooked Sunday); Thu–Fri eat from the freezer, moved to the
  * fridge the night before, because cooked food is only safe for 3–4 days in the fridge.
  * The tray bake never freezes (roast potatoes go grainy), so it covers Sun dinner to Wed lunch.
+ * Slots with a recipe or `extras` are counted in the day's nutrition; free choices aren't.
  */
 export function planDay({ rotation, day, light, planWeek }: DayContext): MealSlot[] {
   const w = rotationWeek(rotation);
@@ -47,11 +65,7 @@ export function planDay({ rotation, day, light, planWeek }: DayContext): MealSlo
     recipeId: id,
   });
   // The freezer is empty until the first Sunday cook.
-  const simplePlate: Meal = {
-    dish: 'Simple plate: omelette, bread, cheese, cucumber & tomato with olive oil',
-    source: 'fresh',
-    how: 'Your freezer fills up on Sunday. Keep today simple.',
-  };
+  const simplePlate = simple(SIMPLE_PLATE, 'Your freezer fills up on Sunday. Keep today simple.');
   const anyFreezerMeal = (dish: string, thaw: boolean): Meal =>
     firstWeekend
       ? simplePlate
@@ -60,11 +74,7 @@ export function planDay({ rotation, day, light, planWeek }: DayContext): MealSlo
 
   let breakfastSlot: Meal;
   if (weekend) {
-    breakfastSlot = {
-      dish: 'Weekend breakfast: eggs, bread, cheese, olive oil, fruit',
-      source: 'fresh',
-      how: 'You have time today, so cook it fresh.',
-    };
+    breakfastSlot = simple(WEEKEND_BREAKFAST, 'You have time today, so cook it fresh.');
   } else if (w.breakfast === 'oats') {
     breakfastSlot = fromFridge('oats');
   } else {
@@ -76,6 +86,7 @@ export function planDay({ rotation, day, light, planWeek }: DayContext): MealSlo
       thawNightBefore: late,
       how: breakfast.reheat,
       recipeId: 'muffins',
+      servings: 2,
     };
   }
 
@@ -89,11 +100,10 @@ export function planDay({ rotation, day, light, planWeek }: DayContext): MealSlo
     1: {
       lunch: firstWeekend
         ? simplePlate
-        : {
-            dish: 'Omelette & bread, or a freezer meal',
-            source: 'fresh',
-            how: "Keep lunch light, you're cooking later.",
-          },
+        : simple(
+            SARDINE_PLATE,
+            "Two minutes, no cooking: you're cooking later. Drain the oil, mash the sardines onto the toast, grate the carrot on the cutter.",
+          ),
       dinner: {
         dish: tray.name,
         source: 'fresh',
@@ -118,16 +128,25 @@ export function planDay({ rotation, day, light, planWeek }: DayContext): MealSlo
     },
   };
 
-  const weekdaySnack = weekend ? null : WEEKDAY_SNACKS[day - 2];
-  const snack: MealSlot = weekend
-    ? { slot: 'Snack', dish: "Fruit, yogurt, nuts, whatever's left", source: 'grab', how: '' }
-    : {
+  let snack: MealSlot;
+  const snackHow = "Mid-afternoon, so you're not starving at dinner.";
+  if (weekend) {
+    snack = { slot: 'Snack', ...simple(WEEKEND_SNACK, '', 'grab') };
+  } else {
+    const idea = WEEKDAY_SNACKS[day - 2] ?? WEEK_SNACK_FALLBACK;
+    if (idea !== 'week-snack') {
+      snack = { slot: 'Snack', ...simple(idea, snackHow, 'grab') };
+    } else if (w.snack) {
+      snack = {
         slot: 'Snack',
-        dish: weekdaySnack ?? (w.snack ? '2 energy balls' : '3 dates + a few almonds'),
-        source: 'grab',
-        how: "Mid-afternoon, so you're not starving at dinner.",
-        ...(weekdaySnack === null && w.snack ? { recipeId: w.snack } : {}),
+        ...simple(WEEK_SNACK_SIDE, snackHow, 'grab'),
+        recipeId: w.snack,
+        servings: 1,
       };
+    } else {
+      snack = { slot: 'Snack', ...simple(WEEK_SNACK_FALLBACK, snackHow, 'grab') };
+    }
+  }
 
   return [
     { slot: 'Breakfast', ...breakfastSlot },

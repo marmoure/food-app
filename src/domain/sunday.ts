@@ -1,7 +1,44 @@
 import { RECIPES } from './recipes';
 import { rotationWeek } from './rotation';
 import { BATCH_TO_FREEZER } from './freezer';
-import type { RecipeId, Rotation } from './types';
+import { CUTTER_HEADS, type CutterHead, type RecipeId, type Rotation } from './types';
+
+export const CUTTER_HEAD_LABEL: Record<CutterHead, string> = {
+  'slice-thick': 'Big slicer',
+  'slice-thin': 'Small slicer',
+  shred: 'Shredder',
+  'grate-coarse': 'Big grater',
+  'grate-fine': 'Small grater',
+};
+
+export interface CutterGroup {
+  head: CutterHead;
+  label: string;
+  items: string[];
+}
+
+/**
+ * Every vegetable the session's recipes send through the cutter, grouped by head in the
+ * order to use them: slicers first, graters last, onion at the very end so its smell
+ * doesn't carry into everything else. One clean-up at the end.
+ */
+export function cutterPlan(recipeIds: readonly RecipeId[]): CutterGroup[] {
+  return CUTTER_HEADS.map((head) => ({
+    head,
+    label: CUTTER_HEAD_LABEL[head],
+    items: recipeIds.flatMap((id) =>
+      (RECIPES[id].cutter ?? [])
+        .filter((j) => j.head === head)
+        .map((j) => `${j.what} (${RECIPES[id].short})`),
+    ),
+  }))
+    .filter((g) => g.items.length > 0)
+    .map((g) => ({
+      ...g,
+      // Onion last within its head.
+      items: [...g.items].sort((a, b) => Number(/onion/i.test(a)) - Number(/onion/i.test(b))),
+    }));
+}
 
 export interface SundayStep {
   id: string;
@@ -13,6 +50,8 @@ export interface SundayStep {
   recipeId?: RecipeId;
   /** This step offers the "log the batch to the freezer" action. */
   logsBatch?: boolean;
+  /** For the cutter step: what goes through which head. */
+  cutter?: CutterGroup[];
 }
 
 export interface SundaySession {
@@ -40,20 +79,33 @@ export function sundaySession(rotation: Rotation, light: boolean): SundaySession
       id: 'setup',
       durationMinutes: 10,
       title: 'Set up',
-      body: `Oven on to ${tray.temp ?? '210°C'}. Take out every ingredient, wash the vegetables, fill the sink with hot soapy water. Put on a podcast.`,
+      body: `Oven on to ${tray.temp ?? '210°C'}. Take out every ingredient, wash and peel the vegetables, fill the sink with hot soapy water. Put on a podcast.`,
     },
   ];
+  const cooked: RecipeId[] = light
+    ? [tray.id, breakfast.id]
+    : [stew.id, pot.id, tray.id, breakfast.id];
+  const cutter = cutterPlan(cooked);
+  if (cutter.length > 0) {
+    input.push({
+      id: 'cutter',
+      durationMinutes: 15,
+      title: 'Vegetable cutter: prep everything at once',
+      body: 'Run the heads in this order into bowls, one bowl per dish. Rinse the machine only once, at the end.',
+      cutter,
+    });
+  }
   if (!light) {
     input.push({
       id: 'stew',
-      durationMinutes: 20,
+      durationMinutes: 15,
       title: `Multicooker: ${stew.short}`,
       body: 'Sauté, then pressure. After that it looks after itself.',
       recipeId: stew.id,
     });
     input.push({
       id: 'pot',
-      durationMinutes: 20,
+      durationMinutes: 15,
       title: `${potInOven ? 'Second oven dish' : 'Big pot'}: ${pot.short}`,
       body: potInOven
         ? 'Get it ready while the tray roasts, then bake it on the lower rack.'
@@ -63,7 +115,7 @@ export function sundaySession(rotation: Rotation, light: boolean): SundaySession
   }
   input.push({
     id: 'tray',
-    durationMinutes: 15,
+    durationMinutes: 10,
     title: `Oven: ${tray.short}`,
     body: 'Into the oven. Set a timer.',
     recipeId: tray.id,
@@ -72,7 +124,7 @@ export function sundaySession(rotation: Rotation, light: boolean): SundaySession
     id: 'carb',
     durationMinutes: 15,
     title: `Stove: ${carbOn && w.carb ? `${RECIPES[w.carb].short} + eggs` : 'boiled eggs'}`,
-    body: `${carbOn ? `${w.carbNote} ` : ''}Boil 6 eggs for snacks: 10 minutes, then cold water.`,
+    body: `${carbOn ? `${w.carbNote} ` : ''}Boil 6 eggs for snacks and soups: 10 minutes, then cold water.`,
     recipeId: carbOn && w.carb ? w.carb : 'eggs',
   });
   input.push({

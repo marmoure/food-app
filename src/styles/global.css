@@ -990,3 +990,214 @@ button {
   font-family: var(--display);
   font-size: 1.02rem;
 }
+
+/* How to eat it */
+.serve {
+  display: grid;
+  gap: 12px;
+}
+.serve > p {
+  max-width: 70ch;
+}
+.serve-cols {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr));
+  gap: 16px 32px;
+  align-items: start;
+}
+.serve h4 {
+  font-size: 0.95rem;
+  margin-bottom: 6px;
+}
+.sides {
+  margin: 0;
+  padding-left: 18px;
+  display: grid;
+  gap: 6px;
+}
+.with {
+  grid-column: 2;
+  font-size: 0.88rem;
+  color: var(--ink-3);
+}
+@media (max-width: 520px) {
+  .with {
+    grid-column: 1;
+  }
+}
+
+/* Nutrition meters: same-hue track and fill, status in words as well as colour */
+.meters {
+  display: grid;
+  gap: 12px;
+}
+.meter-row {
+  --m-fill: var(--accent);
+  --m-track: var(--accent-soft);
+  display: grid;
+  gap: 4px;
+}
+.meter-row.m-low,
+.meter-row.m-high {
+  --m-fill: var(--warn);
+  --m-track: var(--warn-soft);
+}
+.meter-top {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  font-size: 0.9rem;
+}
+.meter-label {
+  font-weight: 700;
+}
+.meter-value {
+  color: var(--ink-2);
+  font-variant-numeric: tabular-nums;
+}
+.meter-value b {
+  color: var(--ink);
+}
+.meter-track {
+  height: 8px;
+  border-radius: 999px;
+  background: var(--m-track);
+  overflow: hidden;
+}
+.meter-fill {
+  display: block;
+  height: 100%;
+  border-radius: 999px;
+  background: var(--m-fill);
+}
+.meter-status {
+  font-size: 0.78rem;
+  font-family: var(--mono);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--warn);
+}
+.day-kcal {
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  color: var(--ink-3);
+  border-top: 1px solid var(--line);
+  padding-top: 6px;
+}
+.nutri-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 14px;
+  font-size: 0.86rem;
+  color: var(--ink-2);
+  font-variant-numeric: tabular-nums;
+}
+.nutri-row b {
+  color: var(--ink);
+}
+.cutter-groups {
+  display: grid;
+  gap: 8px;
+  margin-top: 8px;
+}
+.cutter-groups div {
+  display: grid;
+  grid-template-columns: 110px 1fr;
+  gap: 4px 12px;
+  font-size: 0.92rem;
+}
+.cutter-groups dt {
+  font-family: var(--mono);
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--ink-3);
+  padding-top: 2px;
+}
+.cutter-groups dd {
+  margin: 0;
+}
+@media (max-width: 520px) {
+  .cutter-groups div {
+    grid-template-columns: 1fr;
+  }
+}
+.profile-form {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 150px), 1fr));
+  gap: 12px;
+  align-items: end;
+}
+.profile-form label {
+  display: grid;
+  gap: 4px;
+  font-size: 0.84rem;
+  color: var(--ink-2);
+}
+.profile-form input,
+.profile-form select {
+  font: inherit;
+  color: var(--ink);
+  background: var(--bg);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 8px 10px;
+  width: 100%;
+  min-width: 0;
+}
+.target-tiles {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 130px), 1fr));
+  gap: 10px;
+}
+.target-tiles div {
+  background: var(--surface-2);
+  border-radius: 10px;
+  padding: 12px;
+  display: grid;
+  gap: 2px;
+}
+.target-tiles b {
+  font-family: var(--display);
+  font-size: 1.5rem;
+}
+.target-tiles span {
+  font-size: 0.8rem;
+  color: var(--ink-2);
+}
+.table-wrap {
+  overflow-x: auto;
+}
+.week-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-variant-numeric: tabular-nums;
+  font-size: 0.9rem;
+}
+.week-table th,
+.week-table td {
+  text-align: right;
+  padding: 8px 10px;
+  border-bottom: 1px solid var(--line);
+  white-space: nowrap;
+}
+.week-table th:first-child,
+.week-table td:first-child {
+  text-align: left;
+}
+.week-table thead th {
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--ink-3);
+  font-weight: 500;
+}
+.week-table .off {
+  color: var(--warn);
+  font-weight: 700;
+}
+.week-table .note-cell {
+  color: var(--ink-3);
+  font-size: 0.8rem;
+}

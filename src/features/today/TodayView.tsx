@@ -3,9 +3,11 @@ import { PLAN_DAY_NAMES, formatDate, nextDay, rotationOf } from '../../domain/ca
 import { totalPortions } from '../../domain/freezer';
 import { type Task, planDay, tasksFor } from '../../domain/plan';
 import { RECIPES } from '../../domain/recipes';
+import { serveGuide } from '../../domain/serving';
 import { rotationWeek } from '../../domain/rotation';
 import { SETUP_ITEM_IDS } from '../../domain/setup';
-import type { PlanDay } from '../../domain/types';
+import type { PlanDay, RecipeId } from '../../domain/types';
+import { DayNumbers } from '../../components/DayNumbers';
 import { RecipeLink } from '../../components/RecipeLink';
 import { SourceChip } from '../../components/SourceChip';
 import { usePosition } from '../../hooks/usePlan';
@@ -153,11 +155,13 @@ function PlanDayView() {
                   {s.recipeId && <RecipeLink id={s.recipeId} />}
                 </div>
                 {s.how && <div className="how">{s.how}</div>}
+                {s.recipeId && s.slot !== 'Snack' && <SidesHint recipeId={s.recipeId} />}
               </div>
             ))}
           </div>
         </section>
         <div className="stack">
+          <DayNumbers slots={slots} />
           <section className="card" aria-labelledby="today-jobs">
             <div className="card-h">
               <h3 id="today-jobs">Jobs today</h3>
@@ -203,4 +207,10 @@ function PlanDayView() {
       </div>
     </>
   );
+}
+
+function SidesHint({ recipeId }: { recipeId: RecipeId }) {
+  const plate = serveGuide(recipeId)?.plate;
+  if (!plate?.length) return null;
+  return <div className="with">With: {plate.map((x) => x.name).join(' · ')}</div>;
 }

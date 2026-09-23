@@ -6,6 +6,7 @@ import {
   formatWeekRange,
   weekStart,
 } from '../../domain/calendar';
+import { dayNutrition } from '../../domain/nutrition/meals';
 import { planDay } from '../../domain/plan';
 import { RECIPES } from '../../domain/recipes';
 import { rotationWeek } from '../../domain/rotation';
@@ -55,28 +56,40 @@ export function WeekView() {
         </div>
       </div>
       <div className="days">
-        {DAYS.map((day) => (
-          <div className={`day${day === todayDay ? ' is-today' : ''}`} key={day}>
-            <div className="day-h">
-              <b>{PLAN_DAY_NAMES[day]}</b>
-              <span>
-                {formatDate(addDays(weekStart(planWeek), day), { day: 'numeric', month: 'short' })}
-              </span>
-            </div>
-            {planDay({ rotation, day, light, planWeek }).map((s) => (
-              <div className={`cell ${s.source}`} key={s.slot}>
-                <i>{s.slot}</i>
-                {s.recipeId ? (
-                  <Link className="cell-link" to={`/recipes/${s.recipeId}`}>
-                    {s.dish}
-                  </Link>
-                ) : (
-                  s.dish
-                )}
+        {DAYS.map((day) => {
+          const slots = planDay({ rotation, day, light, planWeek });
+          const { total, uncounted } = dayNutrition(slots);
+          return (
+            <div className={`day${day === todayDay ? ' is-today' : ''}`} key={day}>
+              <div className="day-h">
+                <b>{PLAN_DAY_NAMES[day]}</b>
+                <span>
+                  {formatDate(addDays(weekStart(planWeek), day), {
+                    day: 'numeric',
+                    month: 'short',
+                  })}
+                </span>
               </div>
-            ))}
-          </div>
-        ))}
+              {slots.map((s) => (
+                <div className={`cell ${s.source}`} key={s.slot}>
+                  <i>{s.slot}</i>
+                  {s.recipeId ? (
+                    <Link className="cell-link" to={`/recipes/${s.recipeId}`}>
+                      {s.dish}
+                    </Link>
+                  ) : (
+                    s.dish
+                  )}
+                </div>
+              ))}
+              <div className="day-kcal">
+                {Math.round(total.kcal).toLocaleString('en-GB')} kcal · {Math.round(total.protein)}{' '}
+                g protein
+                {uncounted.length > 0 && ` + ${uncounted.join(', ').toLowerCase()}`}
+              </div>
+            </div>
+          );
+        })}
       </div>
       <div className="grid2">
         <div className="card">

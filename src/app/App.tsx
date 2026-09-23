@@ -1,5 +1,6 @@
 import { Route, Routes } from 'react-router';
 import { FreezerView } from '../features/freezer/FreezerView';
+import { NutritionView } from '../features/nutrition/NutritionView';
 import { RecipeDetailView } from '../features/recipes/RecipeDetailView';
 import { RecipesView } from '../features/recipes/RecipesView';
 import { ShoppingView } from '../features/shopping/ShoppingView';
@@ -20,6 +21,7 @@ export function App() {
         <Route path="shopping" element={<ShoppingView />} />
         <Route path="recipes" element={<RecipesView />} />
         <Route path="recipes/:id" element={<RecipeDetailView />} />
+        <Route path="nutrition" element={<NutritionView />} />
         <Route path="freezer" element={<FreezerView />} />
         <Route path="start" element={<StartView />} />
         <Route path="*" element={<NotFound />} />

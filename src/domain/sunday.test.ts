@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { storagePlan, sundaySession } from './sunday';
+import { cutterPlan, storagePlan, sundaySession } from './sunday';
 import type { Rotation } from './types';
 
 describe('sundaySession', () => {
@@ -29,6 +29,27 @@ describe('sundaySession', () => {
       const prev = steps[i]!;
       expect(s.startsAt).toBe(prev.startsAt + prev.durationMinutes);
     });
+  });
+});
+
+describe('cutterPlan', () => {
+  it('groups the week by cutter head, slicers before graters, onion last', () => {
+    const groups = cutterPlan(['loubia', 'bolognese', 'paprika-tray']);
+    expect(groups.map((g) => g.head)).toEqual([
+      'slice-thick',
+      'slice-thin',
+      'grate-coarse',
+      'grate-fine',
+    ]);
+    const fine = groups.find((g) => g.head === 'grate-fine')!;
+    expect(fine.items.at(-1)).toMatch(/onion/);
+  });
+
+  it('adds one cutter step to the session, without stew or pot vegetables in a light week', () => {
+    const full = sundaySession(0, false).steps.find((s) => s.id === 'cutter');
+    const light = sundaySession(0, true).steps.find((s) => s.id === 'cutter');
+    expect(full?.cutter?.flatMap((g) => g.items).join(' ')).toMatch(/Loubia/);
+    expect(light?.cutter?.flatMap((g) => g.items).join(' ')).not.toMatch(/Loubia|Bolognese/);
   });
 });
 

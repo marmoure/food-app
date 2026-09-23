@@ -73,6 +73,16 @@ export function SundayView() {
                     <span className="muted">{s.body}</span>
                   </label>{' '}
                   {s.recipeId && <RecipeLink id={s.recipeId} />}
+                  {s.cutter && (
+                    <dl className="cutter-groups">
+                      {s.cutter.map((g) => (
+                        <div key={g.head}>
+                          <dt>{g.label}</dt>
+                          <dd>{g.items.join(' · ')}</dd>
+                        </div>
+                      ))}
+                    </dl>
+                  )}
                   {s.logsBatch && (
                     <div className="row" style={{ marginTop: 8 }}>
                       <button

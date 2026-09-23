@@ -5,15 +5,29 @@ Vite + React 19 + TypeScript, installable as a PWA. Data is stored in the browse
 
 ## Who it's for (drives all food content)
 
-- 30, lives alone in Algeria, works 9–5 from home plus a side hustle: **no cooking on weekdays**.
+- 30, male, 176 cm, 81 kg, lives alone in Algeria, works 9–5 from home plus a side hustle: **no cooking on weekdays**.
+- **Goal: lose fat slowly.** Targets come from `src/domain/nutrition/targets.ts` (Mifflin-St Jeor, ~20% deficit):
+  about **1,700 kcal, 130 g protein, 30 g+ fibre** a day. He can edit his profile in the app.
 - **Halal.** No pork, no alcohol in cooking.
 - **No raw onion or raw garlic.** They may only be grated/chopped into long-cooked sauces, and are always optional.
 - **No vinegar** (no vinaigrettes). Dressings are olive oil + salt, or yogurt-mint.
 - **Nothing spicy (gets heartburn).** Sweet paprika only. No harissa or chili. Keep tomato and lemon low.
-- Equipment: MasterPro multicooker (pressure, slow cook, air fryer), gas stove, gas oven, fridge, shelved freezer.
-- Ingredients must be easy to buy at Algerian markets (e.g. frik, cachir nature, deglet nour dates, kesra).
+- **Doesn't like chorba frik.** Not tied to Algerian food: anything filling, healthy and freezer-friendly works.
+- Equipment: MasterPro multicooker (pressure, slow cook, air fryer), gas stove, gas oven, fridge, shelved freezer,
+  **electric vegetable cutter** with 5 heads: big slicer, small slicer, shredder, big grater, small grater.
+  Recipes list their `cutter` jobs, and the Sunday session preps all vegetables in one cutter step.
+- Ingredients must be easy to buy at Algerian markets (e.g. cachir, deglet nour dates, kesra, pain complet).
 
-`src/domain/data.test.ts` enforces part of this. Keep it passing when adding recipes.
+Tests enforce part of this: `src/domain/data.test.ts` (banned ingredients, food links, cutter) and
+`src/domain/nutrition/nutrition.test.ts` (every Sun–Thu of every week within ~10% of the calorie target,
+protein ≥ 85% of target, fibre ≥ 20 g, fat in range). Change recipes, portions or plates → keep these passing.
+
+## Nutrition model
+
+- Ingredient lines link to `FOODS` (per 100 g) as `[qty, item, foodId, grams]`. A recipe's serving = batch ÷ `serves`.
+- `ServeGuide.plate` = sides the plan counts (with `amounts`); `sides` = other options (not counted).
+- A `MealSlot` is counted from its `recipeId` (+ plate, × `servings`) and/or `extras`. Slots with neither
+  (free night, "any freezer meal") are uncounted and the UI shows the calories left for them.
 
 ## Commands
 

@@ -11,12 +11,13 @@ const TABS = [
   { to: '/sunday', label: 'Sunday cook' },
   { to: '/shopping', label: 'Shopping' },
   { to: '/recipes', label: 'Recipes' },
+  { to: '/nutrition', label: 'Nutrition' },
   { to: '/freezer', label: 'Freezer' },
   { to: '/start', label: 'Start here' },
 ] as const;
 
 /** Tabs that show a rotation week keep the selected `?week=` when switching between them. */
-const WEEK_AWARE = new Set(['/week', '/sunday', '/shopping', '/recipes']);
+const WEEK_AWARE = new Set(['/week', '/sunday', '/shopping', '/recipes', '/nutrition']);
 
 export function Layout() {
   const { data, saveState } = useStoreSnapshot();

@@ -1,6 +1,8 @@
+import type { FoodAmount } from './nutrition/foods';
+
 export const RECIPE_IDS = [
   'loubia',
-  'chorba-frik',
+  'bolognese',
   'paprika-tray',
   'tajine-chickpea',
   'lentil-soup',
@@ -17,6 +19,7 @@ export const RECIPE_IDS = [
   'couscous',
   'rice',
   'eggs',
+  'kesra',
 ] as const;
 
 export type RecipeId = (typeof RECIPE_IDS)[number];
@@ -29,11 +32,51 @@ export type RecipeKind = 'stew' | 'pot' | 'tray' | 'breakfast' | 'snack' | 'basi
 
 export type Appliance = 'multicooker' | 'stove' | 'oven' | 'none';
 
-export type YieldUnit = 'portions' | 'jars' | 'muffins' | 'balls';
+export type YieldUnit = 'portions' | 'jars' | 'muffins' | 'balls' | 'rounds';
+
+/** Something to eat alongside a dish. */
+export interface Side {
+  name: string;
+  note?: string;
+  /** Links to the side's own recipe when there is one. */
+  recipeId?: RecipeId;
+  /** What a serving of the side weighs, for the day's nutrition numbers. */
+  amounts?: readonly FoodAmount[];
+}
+
+/** How a dish goes from container to plate. */
+export interface ServeGuide {
+  /** How it's eaten and what a sensible plate looks like. */
+  howToEat: string;
+  /** What the plan puts next to the dish. Counted in the day's nutrition numbers. */
+  plate: readonly Side[];
+  /** Other good options. Healthier first. */
+  sides: readonly Side[];
+  /** Freezer to plate. Absent for dishes that shouldn't be frozen. */
+  thaw?: string;
+}
 
 export interface Ingredient {
   qty: string;
   item: string;
+  /** Links the line to nutrition data. Herbs, spices and water are left out. */
+  amount?: FoodAmount;
+}
+
+/** Heads of the electric vegetable cutter, in the order to use them (clean once). */
+export const CUTTER_HEADS = [
+  'slice-thick',
+  'slice-thin',
+  'shred',
+  'grate-coarse',
+  'grate-fine',
+] as const;
+export type CutterHead = (typeof CUTTER_HEADS)[number];
+
+export interface CutterJob {
+  head: CutterHead;
+  /** What goes through it, e.g. "3 carrots". */
+  what: string;
 }
 
 export interface Recipe {
@@ -57,6 +100,8 @@ export interface Recipe {
   reheat: string;
   ingredients: readonly Ingredient[];
   steps: readonly string[];
+  /** Vegetables to run through the electric cutter before cooking. */
+  cutter?: readonly CutterJob[];
   /** Fallback method, e.g. stove times when not using the multicooker. */
   alternative?: string;
 }
@@ -104,4 +149,8 @@ export interface MealSlot {
   recipeId?: RecipeId;
   /** Must move from freezer to fridge the night before. */
   thawNightBefore?: boolean;
+  /** Recipe servings eaten, e.g. 2 muffins. Defaults to 1. */
+  servings?: number;
+  /** Foods eaten on top of (or instead of) a recipe, for the nutrition numbers. */
+  extras?: readonly FoodAmount[];
 }

@@ -1,6 +1,10 @@
 import { Link, useNavigate, useParams } from 'react-router';
 import { RECIPES, isRecipeId } from '../../domain/recipes';
+import { servingMacros } from '../../domain/nutrition/meals';
+import { CUTTER_HEAD_LABEL } from '../../domain/sunday';
 import { KIND_LABEL } from './labels';
+import { NutritionLine } from './NutritionLine';
+import { ServeSection } from './ServeSection';
 
 export function RecipeDetailView() {
   const { id = '' } = useParams();
@@ -55,6 +59,25 @@ export function RecipeDetailView() {
           <br />
           <b>Reheat:</b> {r.reheat}
         </div>
+        {r.ingredients.some((i) => i.amount) && (
+          <NutritionLine
+            label={`Per ${r.yieldUnit === 'portions' ? 'portion' : r.yieldUnit.replace(/s$/, '')}`}
+            macros={servingMacros(r.id)}
+          />
+        )}
+        {r.cutter && (
+          <div className="note">
+            <b>Vegetable cutter</b>
+            <dl className="cutter-groups">
+              {r.cutter.map((j) => (
+                <div key={j.head + j.what}>
+                  <dt>{CUTTER_HEAD_LABEL[j.head]}</dt>
+                  <dd>{j.what}</dd>
+                </div>
+              ))}
+            </dl>
+          </div>
+        )}
         <div className="detail-cols">
           <section aria-labelledby="ing-h">
             <h3 id="ing-h">Ingredients</h3>
@@ -78,6 +101,7 @@ export function RecipeDetailView() {
           </section>
         </div>
       </article>
+      <ServeSection recipe={r} />
     </>
   );
 }
