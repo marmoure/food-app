@@ -54,6 +54,11 @@ export interface SundayStep {
   cutter?: CutterGroup[];
 }
 
+/** Persisted tick id for a Sunday step. */
+export function sundayStepItemId(step: SundayStep): string {
+  return `sun-${step.id}`;
+}
+
 export interface SundaySession {
   steps: SundayStep[];
   totalMinutes: number;

@@ -293,6 +293,13 @@ export const PLAN_RECIPE_IDS: ReadonlySet<RecipeId> = new Set<RecipeId>([
   'kesra',
 ]);
 
+export const SHOP_ITEM_PREFIX = 'shop-';
+
+/** Persisted tick id for a shopping item: section and item index in the week's list. */
+export function shopItemId(section: number, item: number): string {
+  return `${SHOP_ITEM_PREFIX}${section}-${item}`;
+}
+
 export function rotationWeek(rotation: Rotation): RotationWeek {
   return ROTATION[rotation];
 }

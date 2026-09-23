@@ -43,9 +43,15 @@ offline after the first visit.
 
 ## Data
 
-Ticks and freezer stock are saved in this browser only (localStorage), so they don't sync between
-devices yet. Storage sits behind `StorageAdapter` (`src/storage/adapters.ts`), so adding a backend is
-one new adapter.
+While the app runs from `npm run dev` or `npm run preview`, every change is also written to the
+project folder (git-ignored):
+
+- `data/sunday-kitchen.json`: ticks, freezer stock and profile, which the app loads back.
+- `data/status.md`: the same data as a readable report (items bought, Sunday steps done, freezer).
+
+Each browser also keeps its own copy (localStorage), so the app works offline or from a static host.
+When the app opens, whichever copy was saved last wins. Phone and laptop share the data when both
+use the same dev server (`npm run dev -- --host`).
 
 ## Development
 

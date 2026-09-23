@@ -1,16 +1,13 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router';
 import { formatDate, weekStart } from '../../domain/calendar';
-import { rotationWeek } from '../../domain/rotation';
+import { SHOP_ITEM_PREFIX, rotationWeek, shopItemId as itemId } from '../../domain/rotation';
 import { CheckItem } from '../../components/CheckItem';
 import { Progress } from '../../components/Progress';
 import { WeekSwitcher } from '../../components/WeekSwitcher';
 import { useSelectedWeek } from '../../hooks/usePlan';
 import { useAppData, useStore } from '../../storage/context';
 import { countChecked } from '../../storage/selectors';
-
-const SHOP_PREFIX = 'shop-';
-const itemId = (section: number, item: number) => `${SHOP_PREFIX}${section}-${item}`;
 
 export function ShoppingView() {
   const store = useStore();
@@ -45,7 +42,10 @@ export function ShoppingView() {
           . <b>Tonight:</b> {w.saturdayNote}
         </p>
         <div className="row" style={{ marginTop: 10 }}>
-          <ClearButton key={weekKey} onConfirm={() => store.clearChecked(weekKey, SHOP_PREFIX)} />
+          <ClearButton
+            key={weekKey}
+            onConfirm={() => store.clearChecked(weekKey, SHOP_ITEM_PREFIX)}
+          />
         </div>
       </div>
       <div className="rgrid">

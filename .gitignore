@@ -7,3 +7,6 @@ coverage
 .DS_Store
 .vscode/*
 !.vscode/extensions.json
+
+# The app's saved data (ticks, freezer, profile): personal, written by server/data-api.ts
+data/

@@ -2,7 +2,7 @@ import { addDays, formatDate, toIsoDate, weekStart } from '../../domain/calendar
 import { BATCH_TO_FREEZER } from '../../domain/freezer';
 import { RECIPES } from '../../domain/recipes';
 import { rotationWeek } from '../../domain/rotation';
-import { type SundayStep, storagePlan, sundaySession } from '../../domain/sunday';
+import { storagePlan, sundaySession, sundayStepItemId as stepItemId } from '../../domain/sunday';
 import { LightWeekToggle } from '../../components/LightWeekToggle';
 import { Progress } from '../../components/Progress';
 import { RecipeLink } from '../../components/RecipeLink';
@@ -12,8 +12,6 @@ import { useToday } from '../../hooks/useToday';
 import { useAppData, useStore } from '../../storage/context';
 import { countChecked, isChecked, isLightWeek } from '../../storage/selectors';
 import { BATCH_LOGGED_ITEM } from '../../storage/store';
-
-const stepItemId = (s: SundayStep) => `sun-${s.id}`;
 
 function formatClock(minutes: number): string {
   return `${Math.floor(minutes / 60)}:${String(minutes % 60).padStart(2, '0')}`;

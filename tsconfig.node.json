@@ -20,5 +20,11 @@
     "noFallthroughCasesInSwitch": true,
     "noUncheckedSideEffectImports": true
   },
-  "include": ["vite.config.ts", "vitest.config.ts", "pwa-assets.config.ts", "eslint.config.js"]
+  "include": [
+    "vite.config.ts",
+    "vitest.config.ts",
+    "pwa-assets.config.ts",
+    "eslint.config.js",
+    "server"
+  ]
 }

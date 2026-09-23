@@ -1,10 +1,12 @@
 import react from '@vitejs/plugin-react';
 import { defineConfig } from 'vite';
 import { VitePWA } from 'vite-plugin-pwa';
+import { dataApi } from './server/data-api';
 
 export default defineConfig({
   plugins: [
     react(),
+    dataApi(),
     VitePWA({
       registerType: 'autoUpdate',
       // Icons are generated from public/icon.svg by pwa-assets.config.ts and injected into the manifest.
@@ -22,6 +24,7 @@ export default defineConfig({
       workbox: {
         globPatterns: ['**/*.{js,css,html,svg,png,ico,woff2}'],
         navigateFallback: '/index.html',
+        navigateFallbackDenylist: [/^\/api\//],
       },
     }),
   ],
