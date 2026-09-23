@@ -1,5 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { planDay } from '../plan';
+import { RECIPES } from '../recipes';
+import { PLAN_RECIPE_IDS } from '../rotation';
 import type { PlanDay, Rotation } from '../types';
 import { macrosOf } from './macros';
 import { dayNutrition, plateMacros, servingMacros, slotMacros } from './meals';
@@ -82,6 +84,28 @@ describe('the plan meets the targets', () => {
     it(`Week ${rotation + 1}: leaves room for Friday's free dinner`, () => {
       const fri = dayNutrition(planDay({ rotation, day: 6, light: false, planWeek: 4 + rotation }));
       expect(t.kcal - fri.total.kcal).toBeGreaterThan(400);
+    });
+  }
+});
+
+describe('extra recipes', () => {
+  const kinds = ['stew', 'pot', 'tray', 'breakfast'] as const;
+  const all = Object.values(RECIPES);
+
+  // Sized like the plan's dishes of the same kind, so one can replace another. Once an extra
+  // goes into the rotation, the day checks above hold it to the targets.
+  for (const kind of kinds) {
+    it(`plate ${kind}s like the ones in the plan`, () => {
+      const plan = all.filter((r) => r.kind === kind && PLAN_RECIPE_IDS.has(r.id));
+      const extras = all.filter((r) => r.kind === kind && !PLAN_RECIPE_IDS.has(r.id));
+      const kcal = plan.map((r) => plateMacros(r.id).kcal);
+      const minProtein = Math.min(...plan.map((r) => plateMacros(r.id).protein));
+      for (const r of extras) {
+        const m = plateMacros(r.id);
+        expect(m.kcal, r.id).toBeGreaterThan(Math.min(...kcal) * 0.95);
+        expect(m.kcal, r.id).toBeLessThan(Math.max(...kcal) * 1.05);
+        expect(m.protein, r.id).toBeGreaterThanOrEqual(minProtein);
+      }
     });
   }
 });

@@ -20,6 +20,27 @@ export const RECIPE_IDS = [
   'rice',
   'eggs',
   'kesra',
+  // Extras: not in the 4-week rotation yet, ready to swap in.
+  'goulash',
+  'chicken-curry',
+  'chicken-barley',
+  'beef-bean-stew',
+  'split-pea-soup',
+  'shepherds-pie',
+  'minestrone',
+  'moussaka',
+  'fish-tray',
+  'turkey-tray',
+  'fajita-tray',
+  'stuffed-peppers',
+  'baked-oats',
+  'pancakes',
+  'chia-jars',
+  'breakfast-wraps',
+  'hummus',
+  'roasted-chickpeas',
+  'tuna-dip',
+  'bulgur',
 ] as const;
 
 export type RecipeId = (typeof RECIPE_IDS)[number];
@@ -32,7 +53,7 @@ export type RecipeKind = 'stew' | 'pot' | 'tray' | 'breakfast' | 'snack' | 'basi
 
 export type Appliance = 'multicooker' | 'stove' | 'oven' | 'none';
 
-export type YieldUnit = 'portions' | 'jars' | 'muffins' | 'balls' | 'rounds';
+export type YieldUnit = 'portions' | 'jars' | 'muffins' | 'balls' | 'rounds' | 'squares' | 'wraps';
 
 /** Something to eat alongside a dish. */
 export interface Side {

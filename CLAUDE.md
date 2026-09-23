@@ -29,6 +29,15 @@ protein ≥ 85% of target, fibre ≥ 20 g, fat in range). Change recipes, portio
 - A `MealSlot` is counted from its `recipeId` (+ plate, × `servings`) and/or `extras`. Slots with neither
   (free night, "any freezer meal") are uncounted and the UI shows the calories left for them.
 
+## Extra recipes
+
+- Recipes not in `ROTATION` are **extras** (`PLAN_RECIPE_IDS` in `rotation.ts`), shown under Recipes → Extras.
+  `nutrition.test.ts` keeps each extra's plate within the kcal/protein range of the plan dishes of its kind.
+- The user may report an ingredient he can't find. Then remove **every recipe that uses it**: grep the item
+  text and its `FOODS` id, delete the recipe from `RECIPE_IDS`, `RECIPES` and `SERVE_GUIDES`, drop any
+  `Side.recipeId` pointing at it, and remove the food if nothing else uses it. A rotation dish needs a
+  replacement (and its week's shopping list updated) instead of a plain deletion.
+
 ## Commands
 
 ```bash

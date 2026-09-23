@@ -72,6 +72,23 @@ export const FOODS = {
     fat: 11.5,
     fiber: 0,
   },
+  'turkey-breast': {
+    name: 'Turkey breast / escalopes, raw',
+    kcal: 111,
+    protein: 24.5,
+    carbs: 0,
+    fat: 1.3,
+    fiber: 0,
+  },
+  'white-fish': {
+    name: 'White fish fillets (hake, whiting), raw',
+    kcal: 85,
+    protein: 18,
+    carbs: 0,
+    fat: 1.2,
+    fiber: 0,
+  },
+  tuna: { name: 'Tuna, natural, drained', kcal: 116, protein: 25.5, carbs: 0, fat: 1, fiber: 0 },
 
   // Pulses & grains (dry unless noted)
   'white-beans': {
@@ -98,6 +115,31 @@ export const FOODS = {
     fat: 2.2,
     fiber: 10.7,
   },
+  'split-peas': {
+    name: 'Split peas, dried',
+    kcal: 341,
+    protein: 24.6,
+    carbs: 60.4,
+    fat: 1.2,
+    fiber: 25.5,
+  },
+  'kidney-beans': {
+    name: 'Red kidney beans, dried',
+    kcal: 337,
+    protein: 22.5,
+    carbs: 61.3,
+    fat: 1.1,
+    fiber: 15.2,
+  },
+  barley: {
+    name: 'Pearl barley, dry',
+    kcal: 352,
+    protein: 9.9,
+    carbs: 77.7,
+    fat: 1.2,
+    fiber: 15.6,
+  },
+  bulgur: { name: 'Bulgur, dry', kcal: 342, protein: 12.3, carbs: 75.9, fat: 1.3, fiber: 12.5 },
   oats: { name: 'Rolled oats', kcal: 379, protein: 13.2, carbs: 67.7, fat: 6.5, fiber: 10.1 },
   couscous: { name: 'Couscous, dry', kcal: 376, protein: 12.8, carbs: 77.4, fat: 0.6, fiber: 5 },
   'couscous-ww': {
@@ -137,6 +179,14 @@ export const FOODS = {
     fiber: 6.5,
   },
   breadcrumbs: { name: 'Breadcrumbs', kcal: 395, protein: 13, carbs: 72, fat: 5, fiber: 4.5 },
+  tortilla: {
+    name: 'Wheat tortilla wrap',
+    kcal: 310,
+    protein: 8.5,
+    carbs: 51,
+    fat: 7.5,
+    fiber: 3.5,
+  },
 
   // Vegetables
   carrot: { name: 'Carrot', kcal: 41, protein: 0.9, carbs: 9.6, fat: 0.2, fiber: 2.8 },
@@ -163,12 +213,24 @@ export const FOODS = {
   cabbage: { name: 'White cabbage', kcal: 25, protein: 1.3, carbs: 5.8, fat: 0.1, fiber: 2.5 },
   spinach: { name: 'Spinach', kcal: 23, protein: 2.9, carbs: 3.6, fat: 0.4, fiber: 2.2 },
   olives: { name: 'Green olives', kcal: 145, protein: 1, carbs: 3.8, fat: 15, fiber: 3.3 },
+  eggplant: { name: 'Eggplant', kcal: 25, protein: 1, carbs: 5.9, fat: 0.2, fiber: 3 },
+  cauliflower: { name: 'Cauliflower', kcal: 25, protein: 1.9, carbs: 5, fat: 0.3, fiber: 2 },
+  leek: { name: 'Leek', kcal: 61, protein: 1.5, carbs: 14.2, fat: 0.3, fiber: 1.8 },
+  corn: {
+    name: 'Sweet corn, canned, drained',
+    kcal: 81,
+    protein: 2.6,
+    carbs: 17,
+    fat: 1.2,
+    fiber: 2,
+  },
 
   // Fruit, sweet, nuts
   banana: { name: 'Banana', kcal: 89, protein: 1.1, carbs: 22.8, fat: 0.3, fiber: 2.6 },
   fruit: { name: 'Apple or orange', kcal: 50, protein: 0.6, carbs: 12.5, fat: 0.2, fiber: 2.4 },
   dates: { name: 'Dates (deglet nour)', kcal: 282, protein: 2.5, carbs: 75, fat: 0.4, fiber: 8 },
   honey: { name: 'Honey', kcal: 304, protein: 0.3, carbs: 82.4, fat: 0, fiber: 0 },
+  chia: { name: 'Chia seeds', kcal: 486, protein: 16.5, carbs: 42, fat: 30.7, fiber: 34.4 },
   'peanut-butter': {
     name: 'Peanut butter or tahini',
     kcal: 590,

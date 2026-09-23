@@ -1,12 +1,12 @@
 import { Link, useSearchParams } from 'react-router';
 import { RECIPES } from '../../domain/recipes';
-import { rotationWeek } from '../../domain/rotation';
+import { PLAN_RECIPE_IDS, rotationWeek } from '../../domain/rotation';
 import type { Recipe, RecipeId, RecipeKind } from '../../domain/types';
 import { WeekSwitcher } from '../../components/WeekSwitcher';
 import { useSelectedWeek } from '../../hooks/usePlan';
-import { KIND_LABEL } from './labels';
+import { KIND_LABEL, planLabel } from './labels';
 
-type Filter = 'week' | 'all' | Exclude<RecipeKind, 'snack'>;
+type Filter = 'week' | 'all' | 'extra' | Exclude<RecipeKind, 'snack'>;
 
 const FILTERS: readonly { value: Filter; label: string }[] = [
   { value: 'week', label: 'This week' },
@@ -15,6 +15,7 @@ const FILTERS: readonly { value: Filter; label: string }[] = [
   { value: 'tray', label: 'Tray bakes' },
   { value: 'breakfast', label: 'Breakfast & snacks' },
   { value: 'basic', label: 'Basics' },
+  { value: 'extra', label: 'Extras' },
   { value: 'all', label: 'All' },
 ];
 
@@ -38,6 +39,8 @@ export function RecipesView() {
     recipes = ids.map((id) => RECIPES[id]);
   } else if (filter === 'all') {
     recipes = ALL;
+  } else if (filter === 'extra') {
+    recipes = ALL.filter((r) => !PLAN_RECIPE_IDS.has(r.id));
   } else {
     recipes = ALL.filter(
       (r) => r.kind === filter || (filter === 'breakfast' && r.kind === 'snack'),
@@ -81,6 +84,12 @@ export function RecipesView() {
           cook for a long time, where they melt away. Leave them out if you like. Stews list
           pressure-cooker times, with slow-cooker and stove times underneath.
         </p>
+        {filter === 'extra' && (
+          <p className="muted small">
+            Extras aren't in the 4-week plan yet. Each one is portioned like the plan dish of the
+            same kind, so it can take that dish's place.
+          </p>
+        )}
       </div>
       <div className="rgrid">
         {recipes.map((r) => (
@@ -88,7 +97,7 @@ export function RecipesView() {
             <div>
               <div className="kind">
                 {KIND_LABEL[r.kind]}
-                {r.week && ` · Week ${r.week}`}
+                {planLabel(r)}
               </div>
               <h3>
                 <Link className="recipe-title" to={`/recipes/${r.id}`}>

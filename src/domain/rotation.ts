@@ -1,5 +1,5 @@
 import { type FoodAmount, UNIT_GRAMS } from './nutrition/foods';
-import type { Rotation, RotationWeek, ShoppingItem } from './types';
+import type { RecipeId, Rotation, RotationWeek, ShoppingItem } from './types';
 
 /*
  * Shopping lists cover Mon–Fri plus the weekend: the three batches, breakfasts, snacks,
@@ -280,6 +280,18 @@ export const ROTATION: readonly [RotationWeek, RotationWeek, RotationWeek, Rotat
     ],
   },
 ];
+
+/**
+ * Recipes the 4-week plan cooks, plus the basics every week uses (boiled eggs, kesra).
+ * Everything else in RECIPES is an extra, ready to swap in.
+ */
+export const PLAN_RECIPE_IDS: ReadonlySet<RecipeId> = new Set<RecipeId>([
+  ...ROTATION.flatMap((w) =>
+    [w.stew, w.pot, w.tray, w.breakfast, w.snack, w.carb].filter((id) => id !== null),
+  ),
+  'eggs',
+  'kesra',
+]);
 
 export function rotationWeek(rotation: Rotation): RotationWeek {
   return ROTATION[rotation];

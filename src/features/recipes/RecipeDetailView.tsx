@@ -2,7 +2,7 @@ import { Link, useNavigate, useParams } from 'react-router';
 import { RECIPES, isRecipeId } from '../../domain/recipes';
 import { servingMacros } from '../../domain/nutrition/meals';
 import { CUTTER_HEAD_LABEL } from '../../domain/sunday';
-import { KIND_LABEL } from './labels';
+import { KIND_LABEL, planLabel } from './labels';
 import { NutritionLine } from './NutritionLine';
 import { ServeSection } from './ServeSection';
 
@@ -42,7 +42,7 @@ export function RecipeDetailView() {
       <article className="card recipe-detail">
         <div className="kind">
           {KIND_LABEL[r.kind]}
-          {r.week && ` · Week ${r.week}`}
+          {planLabel(r)}
         </div>
         <h2>{r.name}</h2>
         {r.local && <div className="local">{r.local}</div>}

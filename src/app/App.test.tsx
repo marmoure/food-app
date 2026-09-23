@@ -103,6 +103,15 @@ describe('Recipes', () => {
     expect(screen.getByRole('heading', { name: 'Fridge only' })).toBeInTheDocument();
   });
 
+  it('lists recipes that are not in the plan under Extras', () => {
+    renderApp({ date: new Date(2026, 8, 26), route: '/recipes?filter=extra' });
+    expect(
+      screen.getByRole('link', { name: 'Beef goulash with sweet paprika' }),
+    ).toBeInTheDocument();
+    expect(screen.queryByRole('link', { name: 'Loubia with beef' })).not.toBeInTheDocument();
+    expect(screen.getAllByText(/· Extra/).length).toBeGreaterThan(10);
+  });
+
   it('handles an unknown recipe', () => {
     renderApp({ date: new Date(2026, 8, 26), route: '/recipes/pizza' });
     expect(screen.getByRole('heading', { name: 'Recipe not found' })).toBeInTheDocument();

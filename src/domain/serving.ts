@@ -71,6 +71,15 @@ const STEAMED_VEG: Side = {
   note: 'air fryer 190°C for 10 min with 1 tsp oil',
 };
 const OLIVES: Side = { name: 'A few olives' };
+const VEG_STICKS: Side = {
+  name: 'Cucumber & carrot sticks',
+  note: 'the big slicer makes quick work of them',
+  amounts: [
+    { food: 'cucumber', grams: 100 },
+    { food: 'carrot', grams: 80 },
+  ],
+};
+const TEA: Side = { name: 'Tea or coffee', note: 'after eating, not before' };
 
 /**
  * Freezer to plate for stews and soups. Thawing in the fridge keeps the texture;
@@ -197,6 +206,144 @@ export const SERVE_GUIDES: Partial<Record<RecipeId, ServeGuide>> = {
       "One wedge per meal is a portion. Warm is best: toast frozen wedges in the air fryer or a dry pan. On the weekend it's great with eggs, olive oil or cheese.",
     plate: [],
     sides: [{ name: 'Eggs or cheese' }, { name: 'A drizzle of olive oil' }],
+  },
+
+  // Extras (not in the rotation yet) ----------------------------------------
+  goulash: {
+    howToEat:
+      'A deep bowl, pasta underneath and goulash on top, with a spoon of yogurt stirred in (the Hungarian way uses sour cream). The pasta is the carb, so no bread.',
+    plate: [YOGURT_SPOON, SALAD],
+    sides: [CRUNCH, SLAW],
+    thaw: thaw('add 1 tbsp water over the pasta, lid ajar, microwave 3 min and stir halfway.'),
+  },
+  'chicken-curry': {
+    howToEat:
+      "Over rice, packed in the same container. It's mild and creamy from the yogurt and almonds. Something crunchy on the side stops it feeling heavy.",
+    plate: [CRUNCH],
+    sides: [
+      YOGURT_MINT,
+      { name: 'Bulgur instead of the rice', note: 'more fibre', recipeId: 'bulgur' },
+    ],
+    thaw: thaw(
+      'sprinkle 1 tbsp water over the rice, lid ajar, microwave 3 min. If the sauce looks split, a good stir brings it back.',
+    ),
+  },
+  'chicken-barley': {
+    howToEat:
+      'A big bowl, like a thick soup. The barley is the carb and very filling, so bread is optional.',
+    plate: [YOGURT_SPOON, SALAD],
+    sides: [BREAD, SLAW],
+    thaw: thaw('add 2–3 tbsp water (the barley soaks up the sauce), cover, microwave 3 min.'),
+  },
+  'beef-bean-stew': {
+    howToEat:
+      'A bowl with a spoon of yogurt on top and something crunchy on the side. The beans and corn are already the carb, so bread is optional.',
+    plate: [YOGURT_SPOON, CRUNCH],
+    sides: [BREAD, { name: 'Rice instead of the bread', note: '50 g dry per portion' }],
+    thaw: thaw('microwave 3 min with 1 tbsp water, stirring halfway.'),
+  },
+  'split-pea-soup': {
+    howToEat:
+      "A big bowl with bread. Split peas are very high in fibre and the chicken makes it a full meal, so nothing else is needed. It's gentle on the stomach.",
+    plate: [BREAD],
+    sides: [YOGURT_SPOON, CRUNCH],
+    thaw: thaw('it will be very thick. Add a good splash of water, microwave 3 min and stir well.'),
+  },
+  'shepherds-pie': {
+    howToEat:
+      'A square on a plate with something fresh and crunchy next to it. The mash is the carb, so no bread.',
+    plate: [CRUNCH],
+    sides: [STEAMED_VEG, SLAW],
+    thaw: thaw(
+      'cover and microwave 3 min. Straight from frozen: oven 180°C for 30 min covered with foil, then 5 min uncovered.',
+    ),
+  },
+  minestrone: {
+    howToEat:
+      'A soup bowl with bread on the side. Pasta, beans and chicken are all in it, so a small piece of bread is enough.',
+    plate: [BREAD],
+    sides: [{ name: 'A little grated cheese on top', note: '1 tbsp, not a handful' }, BOILED_EGG],
+    thaw: thaw('add a good splash of water (the pasta drinks the broth), then microwave 3 min.'),
+  },
+  moussaka: {
+    howToEat:
+      "A square on a plate, with something crunchy next to it. It's rich, so it's the whole meal.",
+    plate: [CRUNCH],
+    sides: [SLAW],
+    thaw: thaw(
+      'cover and microwave 3 min. Straight from frozen: oven 180°C for 30 min covered with foil.',
+    ),
+  },
+  'fish-tray': {
+    howToEat:
+      "Fish, potatoes and vegetables with the yogurt-mint sauce. It's the lightest tray bake, so eat it first: Sunday dinner and Monday lunch.",
+    plate: [YOGURT_MINT, SALAD],
+    sides: [SLAW],
+  },
+  'turkey-tray': {
+    howToEat:
+      'A full plate: turkey, roast vegetables and chickpeas, with the yogurt sauce. Or roll it in a warm kesra wedge with the sauce.',
+    plate: [YOGURT_MINT, CRUNCH],
+    sides: [BREAD, SLAW],
+  },
+  'fajita-tray': {
+    howToEat:
+      'Two wraps: warm filling, yogurt sauce (it stands in for sour cream) and shredded lettuce and cucumber. Roll them at the table, not in advance, so they stay soft.',
+    plate: [YOGURT_MINT, CRUNCH],
+    sides: [SLAW],
+  },
+  'stuffed-peppers': {
+    howToEat:
+      'Two peppers with the sauce from the dish and yogurt-mint on the side. The rice is inside, so no bread needed.',
+    plate: [YOGURT_MINT],
+    sides: [BREAD, CRUNCH],
+  },
+  'baked-oats': {
+    howToEat:
+      'A square with a spoon of yogurt, at your desk. Cold is fine; warm is nicer in winter.',
+    plate: [YOGURT_SPOON],
+    sides: [BOILED_EGG, TEA],
+    thaw: 'Night before: move a square to the fridge. Morning: microwave 40 s. Straight from frozen: microwave 90 s.',
+  },
+  pancakes: {
+    howToEat:
+      "Three pancakes. They're sweet from the banana, so no syrup needed. A little honey if you really want it.",
+    plate: [],
+    sides: [{ name: 'A teaspoon of honey' }, TEA],
+    thaw: 'Straight from frozen: air fryer 170°C for 5 min, or microwave 60 s.',
+  },
+  'chia-jars': {
+    howToEat: 'Straight from the jar, topped with a chopped piece of fruit in the morning.',
+    plate: [FRUIT],
+    sides: [TEA],
+  },
+  'breakfast-wraps': {
+    howToEat:
+      "One wrap and a piece of fruit. It's a savoury, high-protein breakfast you can eat with one hand at your desk.",
+    plate: [FRUIT],
+    sides: [TEA],
+    thaw: 'Night before: move one to the fridge. Morning: air fryer 180°C for 4 min. Straight from frozen: microwave 90 s or air fryer 180°C for 8 min.',
+  },
+  hummus: {
+    howToEat: 'Three spoons with vegetable sticks, mid-afternoon.',
+    plate: [VEG_STICKS],
+    sides: [BREAD, BOILED_EGG],
+  },
+  'roasted-chickpeas': {
+    howToEat: 'A handful from the jar when you want something crunchy and salty.',
+    plate: [],
+    sides: [{ name: 'A glass of lben' }],
+  },
+  'tuna-dip': {
+    howToEat: 'With vegetable sticks, or on a slice of bread as a small meal.',
+    plate: [VEG_STICKS],
+    sides: [BREAD],
+  },
+  bulgur: {
+    howToEat:
+      'Use it anywhere the plan says rice: 50 g dry per portion, packed in the same container as the stew.',
+    plate: [],
+    sides: [],
   },
 };
 
