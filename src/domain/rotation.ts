@@ -60,13 +60,20 @@ export const ROTATION: readonly [RotationWeek, RotationWeek, RotationWeek, Rotat
       },
       dairy([
         { name: 'Semi-skimmed milk', detail: '1 L · oats' },
-        { name: 'Plain yogurt', detail: '6 pots' },
-        { name: 'Eggs', detail: '12 · 6 boiled + weekend' },
+        { name: 'Plain yogurt', detail: '8 pots · oats, snacks, yogurt-mint sauce' },
+        {
+          name: 'Eggs',
+          detail: '12 · 6 boiled + weekend (15 on your very first week: two omelette lunches)',
+        },
       ]),
       {
         title: 'Grocery',
         items: [
-          { name: 'Sardines in olive oil', detail: '1 tin · Sunday lunch' },
+          {
+            name: 'Sardines in olive oil',
+            detail:
+              '1 tin · Sunday lunch (skip it on your very first week: that Sunday is an omelette)',
+          },
           { name: 'Dried white beans (loubia)', detail: '400 g · soak tonight' },
           { name: 'Red lentils', detail: '500 g bag (200 g this week)' },
           { name: 'Tomato passata', detail: '1 bottle, 500 g' },
@@ -191,7 +198,7 @@ export const ROTATION: readonly [RotationWeek, RotationWeek, RotationWeek, Rotat
         ],
       },
       dairy([
-        { name: 'Plain yogurt', detail: '8 pots · 200 g for the marinade' },
+        { name: 'Plain yogurt', detail: '9 pots · 200 g for the marinade' },
         { name: 'Semi-skimmed milk', detail: '1 L · oats' },
         { name: 'Eggs', detail: "what's left of the tray" },
       ]),
@@ -259,7 +266,7 @@ export const ROTATION: readonly [RotationWeek, RotationWeek, RotationWeek, Rotat
         { name: 'Butter', detail: '30 g' },
         { name: 'Grated cheese', detail: '200 g' },
         { name: 'Eggs', detail: 'a new tray of 30 if you ran out' },
-        { name: 'Plain yogurt', detail: '4 pots' },
+        { name: 'Plain yogurt', detail: '6 pots' },
         { name: 'Turkey breast slices (blanc de dinde)', detail: '100 g · muffins' },
       ]),
       {

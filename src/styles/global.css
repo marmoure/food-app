@@ -18,7 +18,7 @@ img {
   box-sizing: border-box;
 }
 body {
-  background: var(--bg);
+  background: radial-gradient(120% 420px at 50% -120px, var(--bg-glow), transparent) no-repeat, var(--bg);
   color: var(--ink);
   font-family: var(--body);
   font-size: 16px;
@@ -157,8 +157,8 @@ button {
   color: var(--ink);
 }
 .tab[aria-current='page'] {
-  background: var(--ink);
-  color: var(--bg);
+  background: var(--accent);
+  color: var(--on-accent);
 }
 
 .panel {
@@ -344,13 +344,13 @@ button {
   font-family: var(--mono);
 }
 .wk[aria-pressed='true'] {
-  border-color: var(--ink);
-  background: var(--ink);
-  color: var(--bg);
+  border-color: var(--accent);
+  background: var(--accent);
+  color: var(--on-accent);
 }
 .wk[aria-pressed='true'] span {
-  color: var(--bg);
-  opacity: 0.75;
+  color: var(--on-accent);
+  opacity: 0.9;
 }
 .toggle {
   display: inline-flex;
@@ -717,9 +717,9 @@ button {
   font-size: 0.9rem;
 }
 .fchip[aria-pressed='true'] {
-  background: var(--ink);
-  color: var(--bg);
-  border-color: var(--ink);
+  background: var(--accent);
+  color: var(--on-accent);
+  border-color: var(--accent);
 }
 
 /* freezer */

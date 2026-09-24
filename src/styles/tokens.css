@@ -1,65 +1,39 @@
-/* Design tokens. Light palette on :root; dark palette for OS dark mode or an explicit data-theme="dark". */
+/* Design tokens. Bright light palette by default; dark palette only with an explicit data-theme="dark". */
 :root {
-  --bg: #edf1ee;
+  color-scheme: light;
+  --bg: #fff7ec;
+  --bg-glow: #ffe3b8;
   --surface: #ffffff;
-  --surface-2: #e2e8e4;
-  --ink: #13201b;
-  --ink-2: #48584f;
-  --ink-3: #6b7c74;
-  --line: #d2dbd6;
-  --accent: #0a6b58;
-  --accent-2: #08574a;
+  --surface-2: #fdebd3;
+  --ink: #2a1a10;
+  --ink-2: #6a4f3e;
+  --ink-3: #7d6150;
+  --line: #f3dcc2;
+  --accent: #c2410c;
+  --accent-2: #9a3412;
   --on-accent: #ffffff;
-  --accent-soft: #d3e9e2;
-  --fridge: #0a6b58;
-  --fridge-soft: #d3e9e2;
-  --frost: #2a5c93;
-  --frost-soft: #dce7f5;
-  --fresh: #8f5b00;
-  --fresh-soft: #f4e5c2;
-  --free: #6c3f9e;
-  --free-soft: #e9def5;
-  --grab: #48584f;
-  --grab-soft: #e2e8e4;
-  --warn: #a13f18;
-  --warn-soft: #f7ddd1;
-  --shadow: 0 1px 2px rgba(19, 32, 27, 0.05), 0 6px 18px rgba(19, 32, 27, 0.05);
+  --accent-soft: #ffe9d6;
+  --fridge: #15803d;
+  --fridge-soft: #dcfce7;
+  --frost: #1a62bd;
+  --frost-soft: #dcebfd;
+  --fresh: #8a4f00;
+  --fresh-soft: #fff0b3;
+  --free: #7e3fc4;
+  --free-soft: #f1e6ff;
+  --grab: #6a4f3e;
+  --grab-soft: #fdebd3;
+  --warn: #be123c;
+  --warn-soft: #ffe4e6;
+  --shadow: 0 1px 2px rgba(154, 52, 18, 0.06), 0 8px 22px rgba(194, 65, 12, 0.08);
   --display: 'Bricolage Grotesque', 'Avenir Next', 'Segoe UI', system-ui, sans-serif;
   --body: 'Atkinson Hyperlegible', 'Segoe UI', system-ui, -apple-system, sans-serif;
   --mono: 'IBM Plex Mono', ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
 }
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme='light']) {
-    color-scheme: dark;
-    --bg: #0c1411;
-    --surface: #131f1b;
-    --surface-2: #1a2924;
-    --ink: #e2ece7;
-    --ink-2: #a7b8b0;
-    --ink-3: #80928a;
-    --line: #25352f;
-    --accent: #47c2a5;
-    --accent-2: #6dd4bb;
-    --on-accent: #05231c;
-    --accent-soft: #153a31;
-    --fridge: #47c2a5;
-    --fridge-soft: #153a31;
-    --frost: #8fb7ea;
-    --frost-soft: #1a2c44;
-    --fresh: #e5b452;
-    --fresh-soft: #382c12;
-    --free: #c6a3ee;
-    --free-soft: #2d2040;
-    --grab: #a7b8b0;
-    --grab-soft: #1a2924;
-    --warn: #ef9b75;
-    --warn-soft: #3d2115;
-    --shadow: none;
-  }
-}
 :root[data-theme='dark'] {
   color-scheme: dark;
   --bg: #0c1411;
+  --bg-glow: #0c1411;
   --surface: #131f1b;
   --surface-2: #1a2924;
   --ink: #e2ece7;

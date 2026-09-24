@@ -131,7 +131,9 @@ export function planDay({ rotation, day, light, planWeek }: DayContext): MealSlo
   let snack: MealSlot;
   const snackHow = "Mid-afternoon, so you're not starving at dinner.";
   if (weekend) {
-    snack = { slot: 'Snack', ...simple(WEEKEND_SNACK, '', 'grab') };
+    // The week's boiled eggs come out of the Sunday cook, so the first weekend boils its own.
+    const how = firstWeekend ? 'Boil the egg today (10 min): the batch is boiled on Sunday.' : '';
+    snack = { slot: 'Snack', ...simple(WEEKEND_SNACK, how, 'grab') };
   } else {
     const idea = WEEKDAY_SNACKS[day - 2] ?? WEEK_SNACK_FALLBACK;
     if (idea !== 'week-snack') {
