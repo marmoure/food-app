@@ -21,13 +21,13 @@ describe('parseSaveRequest', () => {
   });
 });
 
-describe('the /api/data endpoint', () => {
+describe('the /api/cubes endpoint', () => {
   let dir: string;
   let server: Server;
   let url: string;
 
   beforeEach(async () => {
-    dir = await mkdtemp(path.join(tmpdir(), 'sunday-kitchen-'));
+    dir = await mkdtemp(path.join(tmpdir(), 'cube-kitchen-'));
     const handle = dataHandler(dir);
     server = createServer((req, res) => {
       void handle(req, res, () => {
@@ -35,7 +35,10 @@ describe('the /api/data endpoint', () => {
         res.end();
       });
     });
-    await new Promise<void>((resolve) => server.listen(0, '127.0.0.1', resolve));
+    await new Promise<void>((resolve, reject) => {
+      server.once('error', reject);
+      server.listen(0, '127.0.0.1', resolve);
+    });
     url = `http://127.0.0.1:${(server.address() as AddressInfo).port}${DATA_ROUTE}`;
   });
 

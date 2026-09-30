@@ -6,14 +6,14 @@ import type { Plugin } from 'vite';
 /*
  * Saves the app's data into the project folder while it runs from `npm run dev` or
  * `npm run preview`, so it can be read outside the browser:
- *   data/sunday-kitchen.json  what the app loads back ({ savedAt, data })
- *   data/status.md            the same data as a readable report
+ *   data/cube-kitchen.json  what the app loads back ({ savedAt, data })
+ *   data/cube-status.md            the same data as a readable report
  * A static host has no such endpoint; the app then keeps its data in the browser only.
  */
 
-export const DATA_ROUTE = '/api/data';
-export const DATA_FILE = 'sunday-kitchen.json';
-export const REPORT_FILE = 'status.md';
+export const DATA_ROUTE = '/api/cubes';
+export const DATA_FILE = 'cube-kitchen.json';
+export const REPORT_FILE = 'cube-status.md';
 const MAX_BODY_BYTES = 1_000_000;
 
 export interface SaveRequest {
@@ -121,7 +121,7 @@ export function dataHandler(dir: string) {
 
 export function dataApi(dir = 'data'): Plugin {
   return {
-    name: 'sunday-kitchen-data',
+    name: 'cube-kitchen-data',
     configureServer(server) {
       server.middlewares.use(dataHandler(path.resolve(server.config.root, dir)));
     },

@@ -1,99 +1,96 @@
-import type { FreezerItem } from '../domain/freezer';
-import type { Activity, Goal, Profile, Sex } from '../domain/nutrition/targets';
-import { isRecipeId } from '../domain/recipes';
+import { validDate } from '../domain/dates';
+import { RECIPE_MAP } from '../domain/recipes';
+import { SLOTS, type CubeData } from '../domain/types';
 
-/** Ticks for one checklist scope: a plan week (keyed by its Saturday) or "setup". */
-export interface ChecklistState {
-  items: Record<string, true>;
-  /** Only meaningful on plan weeks. */
-  light?: boolean;
-}
+const object = (value: unknown): value is Record<string, unknown> =>
+  typeof value === 'object' && value !== null && !Array.isArray(value);
+const integer = (value: unknown, min = 1, max = 100000): value is number =>
+  typeof value === 'number' && Number.isSafeInteger(value) && value >= min && value <= max;
+const text = (value: unknown): value is string => typeof value === 'string' && value.length <= 5000;
+const id = (value: unknown): value is string =>
+  text(value) && value.length > 0 && value.length <= 200;
+const recipeId = (value: unknown): value is string =>
+  typeof value === 'string' && RECIPE_MAP.has(value);
+const slot = (value: unknown) => SLOTS.includes(value as (typeof SLOTS)[number]);
 
-export interface AppData {
-  version: 1;
-  checklists: Record<string, ChecklistState>;
-  freezer: FreezerItem[];
-  /** Body details for nutrition targets. Absent until edited: DEFAULT_PROFILE applies. */
-  profile?: Profile;
-}
-
-export const SETUP_SCOPE = 'setup';
-
-export function emptyData(): AppData {
-  return { version: 1, checklists: {}, freezer: [] };
-}
-
-const isObject = (v: unknown): v is Record<string, unknown> =>
-  typeof v === 'object' && v !== null && !Array.isArray(v);
-
-function parseChecklist(v: unknown): ChecklistState | null {
-  if (!isObject(v) || !isObject(v.items)) return null;
-  const items: Record<string, true> = {};
-  for (const [k, val] of Object.entries(v.items)) if (val === true) items[k] = true;
-  return v.light === true ? { items, light: true } : { items };
-}
-
-function parseFreezerItem(v: unknown): FreezerItem | null {
-  if (!isObject(v)) return null;
-  const { id, name, recipeId, portions, frozenOn } = v;
-  if (typeof id !== 'string' || typeof name !== 'string' || typeof frozenOn !== 'string') {
+export function parseData(value: unknown): CubeData | null {
+  if (
+    !object(value) ||
+    value.version !== 1 ||
+    !Array.isArray(value.batches) ||
+    !Array.isArray(value.meals) ||
+    !Array.isArray(value.favorites) ||
+    !object(value.settings)
+  )
     return null;
-  }
-  if (typeof portions !== 'number' || !Number.isFinite(portions) || portions <= 0) return null;
-  return {
-    id,
-    name,
-    recipeId: typeof recipeId === 'string' && isRecipeId(recipeId) ? recipeId : null,
-    portions: Math.round(portions),
-    frozenOn,
-  };
-}
-
-const SEXES: readonly Sex[] = ['male', 'female'];
-const ACTIVITIES: readonly Activity[] = ['sedentary', 'light', 'moderate', 'active'];
-const GOALS: readonly Goal[] = ['lose', 'maintain', 'gain'];
-
-const inRange = (v: unknown, min: number, max: number): v is number =>
-  typeof v === 'number' && Number.isFinite(v) && v >= min && v <= max;
-
-export function parseProfile(v: unknown): Profile | null {
-  if (!isObject(v)) return null;
-  const { sex, age, heightCm, weightKg, activity, goal } = v;
-  if (!SEXES.includes(sex as Sex) || !ACTIVITIES.includes(activity as Activity)) return null;
-  if (!GOALS.includes(goal as Goal)) return null;
-  if (!inRange(age, 14, 100) || !inRange(heightCm, 120, 230) || !inRange(weightKg, 35, 250)) {
+  const settings = value.settings;
+  if (
+    !integer(settings.people, 1, 20) ||
+    !integer(settings.snackServings, 1, 10) ||
+    !Array.isArray(settings.slots) ||
+    !settings.slots.length ||
+    !settings.slots.every(slot) ||
+    new Set(settings.slots).size !== settings.slots.length
+  )
     return null;
-  }
-  return {
-    sex: sex as Sex,
-    age,
-    heightCm,
-    weightKg,
-    activity: activity as Activity,
-    goal: goal as Goal,
-  };
-}
-
-/**
- * Validates untrusted stored data. Drops anything malformed instead of throwing,
- * so one bad entry can't lock someone out of the app.
- */
-export function parseAppData(raw: unknown): AppData | null {
-  if (!isObject(raw) || raw.version !== 1) return null;
-  const data = emptyData();
-  if (isObject(raw.checklists)) {
-    for (const [key, value] of Object.entries(raw.checklists)) {
-      const parsed = parseChecklist(value);
-      if (parsed) data.checklists[key] = parsed;
+  if (!value.favorites.every(recipeId)) return null;
+  if (
+    !value.batches.every(
+      (b: unknown) =>
+        object(b) &&
+        id(b.id) &&
+        recipeId(b.recipeId) &&
+        integer(b.total) &&
+        integer(b.remaining, 0) &&
+        b.remaining <= b.total &&
+        integer(b.cubesPerServing, 1, 100) &&
+        integer(b.mouldMl, 1, 2000) &&
+        validDate(b.frozenOn) &&
+        validDate(b.useBy) &&
+        b.useBy >= b.frozenOn &&
+        text(b.location) &&
+        text(b.notes),
+    )
+  )
+    return null;
+  if (
+    !value.meals.every(
+      (m: unknown) =>
+        object(m) &&
+        id(m.id) &&
+        validDate(m.date) &&
+        slot(m.slot) &&
+        Array.isArray(m.components) &&
+        m.components.length > 0 &&
+        m.components.length <= 20 &&
+        m.components.every(
+          (c: unknown) => object(c) && recipeId(c.recipeId) && integer(c.servings, 1, 200),
+        ) &&
+        (m.eatenAt === undefined
+          ? m.allocations === undefined
+          : validDate(m.eatenAt) &&
+            m.eatenAt >= m.date &&
+            Array.isArray(m.allocations) &&
+            m.allocations.length > 0 &&
+            m.allocations.every((a: unknown) => object(a) && id(a.batchId) && integer(a.cubes))),
+    )
+  )
+    return null;
+  const data = value as unknown as CubeData;
+  if (
+    new Set(data.batches.map((b) => b.id)).size !== data.batches.length ||
+    new Set(data.meals.map((m) => m.id)).size !== data.meals.length ||
+    new Set(data.meals.map((m) => `${m.date}-${m.slot}`)).size !== data.meals.length
+  )
+    return null;
+  const used = new Map<string, number>();
+  for (const meal of data.meals) {
+    for (const allocation of meal.allocations ?? []) {
+      const batch = data.batches.find((b) => b.id === allocation.batchId);
+      if (!batch || !meal.components.some((c) => c.recipeId === batch.recipeId)) return null;
+      used.set(batch.id, (used.get(batch.id) ?? 0) + allocation.cubes);
     }
   }
-  if (Array.isArray(raw.freezer)) {
-    for (const entry of raw.freezer) {
-      const parsed = parseFreezerItem(entry);
-      if (parsed) data.freezer.push(parsed);
-    }
-  }
-  const profile = parseProfile(raw.profile);
-  if (profile) data.profile = profile;
-  return data;
+  if (data.batches.some((b) => b.remaining + (used.get(b.id) ?? 0) > b.total)) return null;
+  return structuredClone(data);
 }

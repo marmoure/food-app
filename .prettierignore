@@ -3,3 +3,5 @@ dev-dist
 coverage
 legacy
 package-lock.json
+public/library
+src/data

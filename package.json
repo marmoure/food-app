@@ -1,8 +1,8 @@
 {
-  "name": "sunday-kitchen",
+  "name": "cube-kitchen",
   "private": true,
   "version": "0.1.0",
-  "description": "A weekly batch-cooking system: shop Saturday, cook Sunday, reheat all week.",
+  "description": "Ready-to-heat frozen cubes, freezer inventory, and monthly consumption planning.",
   "type": "module",
   "engines": {
     "node": ">=22"
@@ -17,7 +17,8 @@
     "format:check": "prettier --check .",
     "test": "vitest run",
     "test:watch": "vitest",
-    "check": "npm run typecheck && npm run lint && npm run test"
+    "check": "npm run typecheck && npm run lint && npm run test",
+    "import:recipes": "node tools/import-library.mjs"
   },
   "dependencies": {
     "react": "^19.3.0",

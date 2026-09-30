@@ -1,134 +1,110 @@
-import { describe, expect, it } from 'vitest';
-import { DEFAULT_PROFILE } from '../domain/nutrition/targets';
-import { memoryAdapter } from './adapters';
-import { emptyData, parseAppData } from './schema';
-import { AppStore, BATCH_LOGGED_ITEM } from './store';
+import { afterEach, describe, expect, it, vi } from 'vitest';
+import { parseData } from './schema';
+import { browserAdapter, CubeStore, STORAGE_KEY, type Adapter } from './store';
+import { batch, meal, PROTEIN, stocked } from '../test/fixtures';
+import { emptyData } from '../domain/types';
+import { consumeMeal } from '../domain/planner';
 
-function setup() {
-  const adapter = memoryAdapter();
-  let n = 0;
-  const store = new AppStore(adapter, () => `id-${++n}`);
-  return { adapter, store };
-}
+afterEach(() => vi.unstubAllGlobals());
 
-describe('AppStore', () => {
-  it('loads stored data', async () => {
-    const data = emptyData();
-    data.checklists.setup = { items: { 'eq-micro': true } };
-    const store = new AppStore(memoryAdapter(data));
-    await store.load();
-    expect(store.getSnapshot()).toMatchObject({ loaded: true, data });
+describe('persisted cube data', () => {
+  it('roundtrips a consumed plan with batch allocations', () => {
+    const data = consumeMeal(stocked(), 'meal-1', '2027-01-10');
+    expect(parseData(JSON.parse(JSON.stringify(data)))).toEqual(data);
   });
-
-  it('ticks and unticks items and persists them', async () => {
-    const { store, adapter } = setup();
-    store.setChecked('2026-09-26', 'shop-0-0', true);
-    store.setChecked('2026-09-26', 'shop-0-1', true);
-    store.setChecked('2026-09-26', 'shop-0-0', false);
-    await store.flush();
-    expect(adapter.saved?.checklists['2026-09-26']?.items).toEqual({ 'shop-0-1': true });
-    expect(store.getSnapshot().saveState).toBe('saved');
+  it('rejects negative stock, broken dates, unknown recipes and duplicate slots', () => {
+    expect(parseData(stocked({ batches: [batch({ remaining: -1 })] }))).toBeNull();
+    expect(parseData(stocked({ batches: [batch({ useBy: '2027-02-31' })] }))).toBeNull();
+    expect(parseData(stocked({ batches: [batch({ recipeId: 'no-recipe' })] }))).toBeNull();
+    expect(parseData(stocked({ meals: [meal(), meal({ id: 'second' })] }))).toBeNull();
+    expect(parseData({ version: 1, checklists: {} })).toBeNull();
   });
-
-  it('produces a new snapshot object on every change', () => {
-    const { store } = setup();
-    const before = store.getSnapshot();
-    store.setChecked('setup', 'a', true);
-    expect(store.getSnapshot()).not.toBe(before);
+  it('cannot restore consumed cubes without undoing the recorded meal', () => {
+    const data = consumeMeal(stocked(), 'meal-1', '2027-01-10');
+    data.batches[0]!.remaining = 14;
+    expect(parseData(data)).toBeNull();
   });
-
-  it('clears only items with the prefix', () => {
-    const { store } = setup();
-    store.setChecked('w', 'shop-0-0', true);
-    store.setChecked('w', 'sun-stew', true);
-    store.clearChecked('w', 'shop-');
-    expect(store.getSnapshot().data.checklists.w?.items).toEqual({ 'sun-stew': true });
-  });
-
-  it('toggles a light week without touching ticks', () => {
-    const { store } = setup();
-    store.setChecked('w', 'sun-stew', true);
-    store.setLightWeek('w', true);
-    expect(store.getSnapshot().data.checklists.w).toEqual({
-      items: { 'sun-stew': true },
-      light: true,
-    });
-    store.setLightWeek('w', false);
-    expect(store.getSnapshot().data.checklists.w).toEqual({ items: { 'sun-stew': true } });
-  });
-
-  it('logs a week batch only once', () => {
-    const { store } = setup();
-    expect(store.logBatch(0, 'w', '2026-09-27')).toBe(true);
-    expect(store.logBatch(0, 'w', '2026-09-27')).toBe(false);
-    const { data } = store.getSnapshot();
-    expect(data.freezer.map((f) => f.portions)).toEqual([4, 5]);
-    expect(data.checklists.w?.items[BATCH_LOGGED_ITEM]).toBe(true);
-  });
-
-  it('removes a freezer item when its portions reach zero', () => {
-    const { store } = setup();
-    const f = store.addFreezerItem({
-      name: 'Soup',
-      recipeId: null,
-      portions: 1,
-      frozenOn: '2026-09-27',
-    });
-    store.adjustFreezerItem(f.id, 1);
-    expect(store.getSnapshot().data.freezer[0]?.portions).toBe(2);
-    store.adjustFreezerItem(f.id, -2);
-    expect(store.getSnapshot().data.freezer).toEqual([]);
-  });
-
-  it('saves the profile', async () => {
-    const { store, adapter } = setup();
-    store.setProfile({ ...DEFAULT_PROFILE, weightKg: 79 });
-    await store.flush();
-    expect(adapter.saved?.profile?.weightKg).toBe(79);
-  });
-
-  it('reports a failed save', async () => {
-    const store = new AppStore({
-      load: async () => null,
-      save: async () => {
-        throw new Error('quota');
+  it('serializes saves and recovers after a failed write', async () => {
+    const saved: number[] = [];
+    const adapter: Adapter = {
+      async load() {
+        return emptyData();
       },
-    });
-    store.setChecked('setup', 'a', true);
+      async save(data) {
+        await Promise.resolve();
+        saved.push(data.favorites.length);
+        if (saved.length === 1) throw new Error('offline');
+        return 'Saved';
+      },
+    };
+    const store = new CubeStore(adapter);
+    await store.load();
+    store.update((data) => ({ ...data, favorites: [PROTEIN] }));
+    store.update((data) => ({ ...data, favorites: [] }));
     await store.flush();
-    expect(store.getSnapshot().saveState).toBe('error');
+    expect(saved).toEqual([1, 0]);
+    expect(store.getSnapshot().status).toBe('Saved');
+    expect(store.getSnapshot().error).toBe('');
   });
-});
-
-describe('parseAppData', () => {
-  it('keeps a valid profile and drops an invalid one', () => {
-    expect(parseAppData({ version: 1, profile: DEFAULT_PROFILE })?.profile).toEqual(
-      DEFAULT_PROFILE,
+  it('loads the latest valid copy and persists it locally', async () => {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify({ savedAt: 10, data: emptyData() }));
+    const remote = stocked();
+    vi.stubGlobal(
+      'fetch',
+      vi.fn().mockResolvedValue(
+        new Response(JSON.stringify({ savedAt: 20, data: remote }), {
+          headers: { 'Content-Type': 'application/json' },
+        }),
+      ),
     );
-    expect(
-      parseAppData({ version: 1, profile: { ...DEFAULT_PROFILE, weightKg: -5 } })?.profile,
-    ).toBeUndefined();
+    expect(await browserAdapter().load()).toEqual(remote);
+    expect(JSON.parse(localStorage.getItem(STORAGE_KEY)!).savedAt).toBe(20);
   });
-
-  it('rejects unknown versions and non-objects', () => {
-    expect(parseAppData(null)).toBeNull();
-    expect(parseAppData({ version: 2 })).toBeNull();
+  it('preserves damaged saves instead of silently resetting them', async () => {
+    const raw = '{bad json';
+    localStorage.setItem(STORAGE_KEY, raw);
+    vi.stubGlobal('fetch', vi.fn().mockResolvedValue(new Response(null, { status: 404 })));
+    await expect(browserAdapter().load()).rejects.toThrow('could not be read');
+    expect(localStorage.getItem(STORAGE_KEY)).toBe(raw);
   });
-
-  it('drops malformed entries instead of failing', () => {
-    const parsed = parseAppData({
-      version: 1,
-      checklists: { ok: { items: { a: true, b: 'yes' }, light: true }, bad: 3 },
-      freezer: [
-        { id: '1', name: 'Soup', recipeId: 'nope', portions: 2, frozenOn: '2026-09-27' },
-        { id: '2', name: 'Stew', portions: -1, frozenOn: '2026-09-27' },
-        'junk',
-      ],
+  it('pushes a newer offline device copy back to the project when reopened', async () => {
+    const data = stocked();
+    localStorage.setItem(STORAGE_KEY, JSON.stringify({ savedAt: 20, data }));
+    const doFetch = vi
+      .fn()
+      .mockResolvedValueOnce(
+        new Response(JSON.stringify({ savedAt: 10, data: emptyData() }), {
+          headers: { 'Content-Type': 'application/json' },
+        }),
+      )
+      .mockResolvedValue(new Response(null, { status: 204 }));
+    vi.stubGlobal('fetch', doFetch);
+    expect(await browserAdapter().load()).toEqual(data);
+    expect(doFetch).toHaveBeenLastCalledWith(
+      '/api/cubes',
+      expect.objectContaining({ method: 'PUT', body: expect.stringContaining('"savedAt":20') }),
+    );
+  });
+  it('keeps working on a static host and reports only a device save', async () => {
+    vi.stubGlobal(
+      'fetch',
+      vi
+        .fn()
+        .mockResolvedValue(
+          new Response('<html>app</html>', { headers: { 'Content-Type': 'text/html' } }),
+        ),
+    );
+    const adapter = browserAdapter();
+    expect(await adapter.load()).toBeNull();
+    expect(await adapter.save(stocked())).toBe('Saved on this device');
+    expect(await adapter.load()).toEqual(stocked());
+  });
+  it('reports a project-only save if browser storage is blocked', async () => {
+    const spy = vi.spyOn(Storage.prototype, 'setItem').mockImplementation(() => {
+      throw new Error('quota');
     });
-    expect(parsed).toEqual({
-      version: 1,
-      checklists: { ok: { items: { a: true }, light: true } },
-      freezer: [{ id: '1', name: 'Soup', recipeId: null, portions: 2, frozenOn: '2026-09-27' }],
-    });
+    vi.stubGlobal('fetch', vi.fn().mockResolvedValue(new Response(null, { status: 204 })));
+    expect(await browserAdapter().save(emptyData())).toBe('Saved to project');
+    spy.mockRestore();
   });
 });

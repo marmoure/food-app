@@ -1,119 +1,111 @@
-import { screen, within } from '@testing-library/react';
+import { render, screen, within, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { MemoryRouter } from 'react-router';
 import { describe, expect, it } from 'vitest';
-import { renderApp } from '../test/render';
+import { App } from './App';
+import { StoreContext } from '../storage/context';
+import { CubeStore, memoryAdapter } from '../storage/store';
+import { emptyData, type CubeData } from '../domain/types';
+import { batch, meal, PROTEIN, stocked } from '../test/fixtures';
+import { localDate, nextMonthDate } from '../domain/dates';
 
-describe('Today', () => {
-  it('shows the setup screen before the plan starts', () => {
-    renderApp({ date: new Date(2026, 8, 22) });
-    expect(screen.getByRole('heading', { name: /Week 1 starts Saturday/ })).toBeInTheDocument();
-  });
+async function renderApp(route = '/', data: CubeData = emptyData()) {
+  const store = new CubeStore(memoryAdapter(data));
+  await store.load();
+  render(
+    <StoreContext.Provider value={store}>
+      <MemoryRouter initialEntries={[route]}>
+        <App />
+      </MemoryRouter>
+    </StoreContext.Provider>,
+  );
+  return store;
+}
 
-  it("shows Monday's meals from the fridge", () => {
-    renderApp({ date: new Date(2026, 8, 28) });
-    expect(screen.getByRole('heading', { name: 'Monday: just reheat' })).toBeInTheDocument();
-    const meals = screen.getByRole('region', { name: 'What you eat today' });
-    expect(within(meals).getByText('Paprika chicken, potatoes & carrots')).toBeInTheDocument();
-    expect(within(meals).getByText('Loubia with beef')).toBeInTheDocument();
-    expect(
-      within(meals).getByText(/With: Whole-wheat bread or a kesra wedge · Cucumber & tomato salad/),
-    ).toBeInTheDocument();
-  });
-
-  it('reminds you on Wednesday to move tomorrow’s meals out of the freezer', () => {
-    renderApp({ date: new Date(2026, 8, 30) });
-    const jobs = screen.getByRole('region', { name: 'Jobs today' });
-    expect(within(jobs).getByText(/move 2 things from the freezer/)).toBeInTheDocument();
-  });
-});
-
-describe('Shopping', () => {
-  it('saves ticks to the store', async () => {
+describe('Cube Kitchen', () => {
+  it('starts empty and logs a real batch with measured yield', async () => {
     const user = userEvent.setup();
-    const { store } = renderApp({ date: new Date(2026, 8, 26), route: '/shopping' });
-    await user.click(screen.getByRole('checkbox', { name: /beef chunks/i }));
-    expect(store.getSnapshot().data.checklists['2026-09-26']?.items['shop-0-0']).toBe(true);
-    expect(screen.getByLabelText('1 of 30 done')).toBeInTheDocument();
-  });
-
-  it('switches weeks through the week switcher', async () => {
-    const user = userEvent.setup();
-    renderApp({ date: new Date(2026, 8, 26), route: '/shopping' });
-    await user.click(screen.getByRole('button', { name: /Week 2/ }));
-    expect(screen.getByRole('checkbox', { name: /Red lentils/ })).toBeInTheDocument();
-  });
-});
-
-describe('Nutrition', () => {
-  it('shows the day against the targets on Today', () => {
-    renderApp({ date: new Date(2026, 8, 28) });
-    const numbers = screen.getByRole('region', { name: "Today's numbers" });
+    const store = await renderApp('/freezer');
     expect(
-      within(numbers).getByRole('meter', { name: /^Calories: .* of 1,700 kcal/ }),
+      screen.getByRole('heading', { name: 'Your next easy meal starts here.' }),
     ).toBeInTheDocument();
+    await user.click(screen.getByRole('button', { name: 'Freeze a batch' }));
+    const dialog = screen.getByRole('dialog');
+    await user.type(within(dialog).getByLabelText('Cubes frozen'), '14');
+    await user.type(within(dialog).getByLabelText('Cubes per recipe serving'), '2');
+    await user.type(within(dialog).getByLabelText('Freezer location'), 'Top drawer');
+    await user.click(within(dialog).getByRole('button', { name: 'Add to freezer' }));
+    expect(store.getSnapshot().data.batches[0]).toMatchObject({
+      recipeId: PROTEIN,
+      total: 14,
+      remaining: 14,
+      cubesPerServing: 2,
+      location: 'Top drawer',
+    });
+    expect(screen.getByText('7 whole recipe servings')).toBeInTheDocument();
+    await store.flush();
   });
-
-  it('recalculates targets when the profile changes', async () => {
+  it('builds a monthly plan without creating stock or overwriting existing meals', async () => {
     const user = userEvent.setup();
-    const { store } = renderApp({ date: new Date(2026, 8, 28), route: '/nutrition' });
-    expect(screen.getByRole('heading', { name: '1,700 kcal · 130 g protein' })).toBeInTheDocument();
-    await user.selectOptions(screen.getByLabelText('Goal'), 'maintain');
-    await user.click(screen.getByRole('button', { name: 'Save' }));
-    expect(store.getSnapshot().data.profile?.goal).toBe('maintain');
-    expect(screen.getByRole('heading', { name: /^2,100 kcal/ })).toBeInTheDocument();
+    const store = await renderApp('/plan');
+    await user.click(screen.getByRole('button', { name: 'Next month' }));
+    await user.click(screen.getByRole('button', { name: 'Build monthly plan' }));
+    const dialog = screen.getByRole('dialog');
+    expect(within(dialog).getByLabelText('People')).toHaveValue(1);
+    expect(within(dialog).getByLabelText('Snack servings / person')).toHaveValue(2);
+    await user.click(within(dialog).getByRole('button', { name: /Build plan ·/ }));
+    expect(store.getSnapshot().data.meals.length).toBeGreaterThanOrEqual(112);
+    expect(store.getSnapshot().data.batches).toEqual([]);
+    expect(store.getSnapshot().data.meals.find((m) => m.slot === 'lunch')?.components).toHaveLength(
+      3,
+    );
+    expect(
+      screen.getByText('Chicken karahi', { selector: '.cooking-card h3 a' }),
+    ).toBeInTheDocument();
+    await store.flush();
   });
-});
-
-describe('Freezer', () => {
-  it('logs the Sunday batch once', async () => {
+  it('deducts a meal when eaten and restores it on undo', async () => {
     const user = userEvent.setup();
-    renderApp({ date: new Date(2026, 8, 27), route: '/freezer' });
-    await user.click(screen.getByRole('button', { name: /Log Week 1 batch/ }));
-    expect(screen.getByText('9')).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: 'Week 1 batch logged' })).toBeDisabled();
+    const today = localDate();
+    const store = await renderApp(
+      '/',
+      stocked({
+        batches: [batch({ frozenOn: today, useBy: nextMonthDate(today) })],
+        meals: [meal({ date: today })],
+      }),
+    );
+    await user.click(screen.getByRole('button', { name: /Lunch Chicken karahi/ }));
+    await user.click(
+      within(screen.getByRole('dialog')).getByRole('button', { name: 'Mark eaten' }),
+    );
+    expect(store.getSnapshot().data.batches[0]?.remaining).toBe(12);
+    await user.click(screen.getByRole('button', { name: /Lunch · Eaten Chicken karahi/ }));
+    await user.click(screen.getByRole('button', { name: 'Undo eaten & restore cubes' }));
+    expect(store.getSnapshot().data.batches[0]?.remaining).toBe(14);
+    await store.flush();
   });
-});
-
-describe('Recipes', () => {
-  it('opens a recipe page', () => {
-    renderApp({ date: new Date(2026, 8, 26), route: '/recipes/zitoune' });
-    expect(
-      screen.getByRole('heading', { name: 'Chicken with olives & mushrooms' }),
-    ).toBeInTheDocument();
-    expect(screen.getByText(/pitted green olives/)).toBeInTheDocument();
+  it('shows a missing-stock error without changing inventory', async () => {
+    const user = userEvent.setup();
+    const store = await renderApp('/', { ...emptyData(), meals: [meal({ date: localDate() })] });
+    await user.click(screen.getByRole('button', { name: /Lunch Chicken karahi/ }));
+    await user.click(screen.getByRole('button', { name: 'Mark eaten' }));
+    expect(screen.getByRole('alert')).toHaveTextContent('Not enough usable stock');
+    expect(store.getSnapshot().data.meals[0]?.eatenAt).toBeUndefined();
   });
-
-  it('shows how to eat a dish, its sides and how to thaw it', () => {
-    renderApp({ date: new Date(2026, 8, 26), route: '/recipes/loubia' });
-    const serve = screen.getByRole('region', { name: 'How to eat it' });
-    expect(
-      within(serve).getByRole('link', { name: 'Whole-wheat bread or a kesra wedge' }),
-    ).toHaveAttribute('href', '/recipes/kesra');
-    expect(within(serve).getByRole('heading', { name: 'From the freezer' })).toBeInTheDocument();
-  });
-
-  it('shows cutter prep and nutrition per portion', () => {
-    renderApp({ date: new Date(2026, 8, 26), route: '/recipes/bolognese' });
-    expect(screen.getAllByText('Small grater').length).toBeGreaterThan(0);
-    expect(screen.getByText('Per portion:')).toBeInTheDocument();
-  });
-
-  it('marks tray bakes as fridge-only', () => {
-    renderApp({ date: new Date(2026, 8, 26), route: '/recipes/paprika-tray' });
-    expect(screen.getByRole('heading', { name: 'Fridge only' })).toBeInTheDocument();
-  });
-
-  it('lists recipes that are not in the plan under Extras', () => {
-    renderApp({ date: new Date(2026, 8, 26), route: '/recipes?filter=extra' });
-    expect(
-      screen.getByRole('link', { name: 'Beef goulash with sweet paprika' }),
-    ).toBeInTheDocument();
-    expect(screen.queryByRole('link', { name: 'Loubia with beef' })).not.toBeInTheDocument();
-    expect(screen.getAllByText(/· Extra/).length).toBeGreaterThan(10);
-  });
-
-  it('handles an unknown recipe', () => {
-    renderApp({ date: new Date(2026, 8, 26), route: '/recipes/pizza' });
-    expect(screen.getByRole('heading', { name: 'Recipe not found' })).toBeInTheDocument();
+  it('searches the imported library and keeps saved recipes', async () => {
+    const user = userEvent.setup();
+    const store = await renderApp('/recipes');
+    await user.type(screen.getByRole('textbox', { name: 'Search recipes' }), 'karahi');
+    expect(screen.getByRole('link', { name: 'Chicken karahi' })).toBeInTheDocument();
+    await user.click(screen.getByRole('button', { name: 'Save Chicken karahi' }));
+    expect(store.getSnapshot().data.favorites).toContain(PROTEIN);
+    await user.click(screen.getByRole('link', { name: 'Chicken karahi' }));
+    expect(screen.getByRole('heading', { name: 'Chicken karahi' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Reheat' })).toBeInTheDocument();
+    expect(screen.getByText('A serving and a cube are different things.')).toBeInTheDocument();
+    await waitFor(() =>
+      expect(screen.getByRole('button', { name: 'Saved' })).toHaveAttribute('aria-pressed', 'true'),
+    );
+    await store.flush();
   });
 });

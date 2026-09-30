@@ -1,158 +1,191 @@
-import { batchEntries, type FreezerItem, type NewFreezerItem } from '../domain/freezer';
-import type { Profile } from '../domain/nutrition/targets';
-import type { Rotation } from '../domain/types';
-import type { StorageAdapter } from './adapters';
-import { type AppData, type ChecklistState, emptyData } from './schema';
+import { emptyData, type CubeData } from '../domain/types';
+import { recipeById } from '../domain/recipes';
+import { parseData } from './schema';
 
-export type SaveState = 'idle' | 'saved' | 'error';
-
-export interface StoreSnapshot {
-  data: AppData;
-  loaded: boolean;
-  saveState: SaveState;
+export const STORAGE_KEY = 'cube-kitchen:v1';
+export const DATA_URL = '/api/cubes';
+interface Saved {
+  savedAt: number;
+  data: CubeData;
 }
-
-/** crypto.randomUUID only exists in secure contexts; `vite --host` on a LAN IP isn't one. */
-function defaultId(): string {
-  if (typeof crypto !== 'undefined' && 'randomUUID' in crypto) return crypto.randomUUID();
-  return `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 10)}`;
+export interface Adapter {
+  load(): Promise<CubeData | null>;
+  save(data: CubeData): Promise<string>;
 }
-
-/** Marks the week's freezer batch as logged so it can't be added twice. */
-export const BATCH_LOGGED_ITEM = 'logged';
-
-/**
- * Holds app data in memory, persists every change through the adapter, and exposes
- * `subscribe`/`getSnapshot` for React's useSyncExternalStore. Snapshots are immutable:
- * every change produces a new object.
- */
-export class AppStore {
-  private snapshot: StoreSnapshot = { data: emptyData(), loaded: false, saveState: 'idle' };
-  private readonly listeners = new Set<() => void>();
-  private readonly adapter: StorageAdapter;
-  private readonly newId: () => string;
-  private saveChain: Promise<void> = Promise.resolve();
-
-  constructor(adapter: StorageAdapter, newId: () => string = defaultId) {
-    this.adapter = adapter;
-    this.newId = newId;
-  }
-
-  async load(): Promise<void> {
-    const stored = await this.adapter.load();
-    this.set({ ...this.snapshot, data: stored ?? this.snapshot.data, loaded: true });
-  }
-
-  subscribe = (listener: () => void): (() => void) => {
-    this.listeners.add(listener);
-    return () => this.listeners.delete(listener);
+function saved(value: unknown): Saved | null {
+  if (!value || typeof value !== 'object') return null;
+  const stamp = value as Partial<Saved>;
+  const data = parseData(stamp.data);
+  return data && typeof stamp.savedAt === 'number' && Number.isFinite(stamp.savedAt)
+    ? { savedAt: stamp.savedAt, data }
+    : null;
+}
+function report(data: CubeData): string {
+  return [
+    '# Cube Kitchen',
+    '',
+    '## Freezer',
+    ...data.batches.map(
+      (b) =>
+        `- ${recipeById(b.recipeId).name}: ${b.remaining}/${b.total} cubes; ${b.cubesPerServing} cubes/serving; frozen ${b.frozenOn}; use by ${b.useBy}; ${b.location}`,
+    ),
+    '',
+    '## Consumption plan',
+    ...[...data.meals]
+      .sort((a, b) => a.date.localeCompare(b.date))
+      .map(
+        (m) =>
+          `- ${m.date} ${m.slot}${m.eatenAt ? ' [eaten]' : ''}: ${m.components.map((c) => `${c.servings} × ${recipeById(c.recipeId).name}`).join(' + ')}`,
+      ),
+    '',
+  ].join('\n');
+}
+export function browserAdapter(): Adapter {
+  return {
+    async load() {
+      let local: Saved | null = null;
+      let damaged = false;
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (raw) {
+          local = saved(JSON.parse(raw));
+          damaged = !local;
+        }
+      } catch {
+        damaged = true;
+      }
+      let remote: Saved | null = null;
+      try {
+        const response = await fetch(DATA_URL, {
+          cache: 'no-store',
+          signal: AbortSignal.timeout(4000),
+        });
+        if (response.ok && response.headers.get('content-type')?.includes('application/json')) {
+          remote = saved(await response.json());
+          if (!remote) damaged = true;
+        }
+      } catch {
+        /* Offline: use the device copy. */
+      }
+      const newest = remote && (!local || remote.savedAt > local.savedAt) ? remote : local;
+      if (!newest && damaged)
+        throw new Error(
+          'Saved data could not be read. Your files have been kept. Restore a valid Cube Kitchen backup to continue.',
+        );
+      if (newest) {
+        try {
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(newest));
+        } catch {
+          /* A project copy can still be read. */
+        }
+        if (newest === local && (!remote || local.savedAt > remote.savedAt)) {
+          try {
+            await fetch(DATA_URL, {
+              method: 'PUT',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ ...local, report: report(local.data) }),
+              signal: AbortSignal.timeout(4000),
+            });
+          } catch {
+            /* Keep the newer device copy until the project is available again. */
+          }
+        }
+      }
+      return newest?.data ?? null;
+    },
+    async save(data) {
+      const stamped = { savedAt: Date.now(), data };
+      let device = false;
+      let project = false;
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(stamped));
+        device = true;
+      } catch {
+        /* Try the project copy too. */
+      }
+      try {
+        const response = await fetch(DATA_URL, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ ...stamped, report: report(data) }),
+          signal: AbortSignal.timeout(4000),
+        });
+        project = response.status === 204;
+      } catch {
+        /* The static/offline app keeps a device copy. */
+      }
+      if (!device && !project) throw new Error('Could not save. Export a backup before closing.');
+      return project
+        ? device
+          ? 'Saved to device & project'
+          : 'Saved to project'
+        : 'Saved on this device';
+    },
   };
-
-  getSnapshot = (): StoreSnapshot => this.snapshot;
-
-  /** Resolves once every pending save has finished (for tests and future sync). */
-  flush(): Promise<void> {
-    return this.saveChain;
+}
+export function memoryAdapter(initial: CubeData | null = null): Adapter {
+  let data = initial;
+  return {
+    async load() {
+      return data;
+    },
+    async save(next) {
+      data = next;
+      return 'Saved';
+    },
+  };
+}
+export class CubeStore {
+  private snapshot = { data: emptyData(), status: 'Ready', error: '' };
+  private listeners = new Set<() => void>();
+  private writing: Promise<void> = Promise.resolve();
+  private revision = 0;
+  constructor(privateAdapter: Adapter) {
+    this.adapter = privateAdapter;
   }
-
-  // Checklists -------------------------------------------------------------
-
-  setChecked(scope: string, itemId: string, checked: boolean): void {
-    this.updateChecklist(scope, (c) => {
-      const items = { ...c.items };
-      if (checked) items[itemId] = true;
-      else delete items[itemId];
-      return { ...c, items };
-    });
+  private adapter: Adapter;
+  getSnapshot = () => this.snapshot;
+  subscribe = (listener: () => void) => {
+    this.listeners.add(listener);
+    return () => {
+      this.listeners.delete(listener);
+    };
+  };
+  private emit() {
+    this.listeners.forEach((listener) => listener());
   }
-
-  /** Unticks every item in the scope whose id starts with the prefix. */
-  clearChecked(scope: string, prefix: string): void {
-    this.updateChecklist(scope, (c) => ({
-      ...c,
-      items: Object.fromEntries(
-        Object.entries(c.items).filter(([id]) => !id.startsWith(prefix)),
-      ) as Record<string, true>,
-    }));
+  async load() {
+    const data = await this.adapter.load();
+    this.snapshot = {
+      data: data ?? emptyData(),
+      status: data ? 'Saved data loaded' : 'Ready',
+      error: '',
+    };
+    this.emit();
   }
-
-  setLightWeek(weekKey: string, light: boolean): void {
-    this.updateChecklist(weekKey, (c) => {
-      const next: ChecklistState = { items: c.items };
-      if (light) next.light = true;
-      return next;
-    });
-  }
-
-  // Freezer ----------------------------------------------------------------
-
-  addFreezerItem(entry: NewFreezerItem): FreezerItem {
-    const item: FreezerItem = { ...entry, id: this.newId() };
-    this.updateData((d) => ({ ...d, freezer: [...d.freezer, item] }));
-    return item;
-  }
-
-  /** Changes portions by delta; the item is removed when it reaches zero. */
-  adjustFreezerItem(id: string, delta: number): void {
-    this.updateData((d) => ({
-      ...d,
-      freezer: d.freezer
-        .map((f) => (f.id === id ? { ...f, portions: f.portions + delta } : f))
-        .filter((f) => f.portions > 0),
-    }));
-  }
-
-  /** Adds a full Sunday batch to the freezer once per plan week. Returns false if already logged. */
-  logBatch(rotation: Rotation, weekKey: string, frozenOn: string): boolean {
-    if (this.snapshot.data.checklists[weekKey]?.items[BATCH_LOGGED_ITEM]) return false;
-    const items = batchEntries(rotation, frozenOn).map((e) => ({ ...e, id: this.newId() }));
-    this.updateData((d) => {
-      const current = d.checklists[weekKey] ?? { items: {} };
-      return {
-        ...d,
-        freezer: [...d.freezer, ...items],
-        checklists: {
-          ...d.checklists,
-          [weekKey]: { ...current, items: { ...current.items, [BATCH_LOGGED_ITEM]: true } },
-        },
-      };
-    });
-    return true;
-  }
-
-  // Profile ----------------------------------------------------------------
-
-  setProfile(profile: Profile): void {
-    this.updateData((d) => ({ ...d, profile }));
-  }
-
-  // Internals --------------------------------------------------------------
-
-  private updateChecklist(scope: string, fn: (c: ChecklistState) => ChecklistState): void {
-    this.updateData((d) => ({
-      ...d,
-      checklists: { ...d.checklists, [scope]: fn(d.checklists[scope] ?? { items: {} }) },
-    }));
-  }
-
-  private updateData(fn: (d: AppData) => AppData): void {
-    const data = fn(this.snapshot.data);
-    this.set({ ...this.snapshot, data });
-    // Saves run in order so an older state can never overwrite a newer one.
-    this.saveChain = this.saveChain
-      .then(() => this.adapter.save(data))
-      .then(
-        () => this.setSaveState('saved'),
-        () => this.setSaveState('error'),
-      );
-  }
-
-  private setSaveState(saveState: SaveState): void {
-    if (this.snapshot.saveState !== saveState) this.set({ ...this.snapshot, saveState });
-  }
-
-  private set(next: StoreSnapshot): void {
-    this.snapshot = next;
-    for (const l of this.listeners) l();
-  }
+  update = (change: (data: CubeData) => CubeData) => {
+    const data = parseData(change(this.snapshot.data));
+    if (!data)
+      throw new Error('Please check the quantities and dates. This change cannot be saved.');
+    const revision = ++this.revision;
+    this.snapshot = { data, status: 'Saving…', error: '' };
+    this.emit();
+    this.writing = this.writing
+      .catch(() => {})
+      .then(async () => {
+        try {
+          const status = await this.adapter.save(data);
+          if (revision === this.revision) this.snapshot = { data, status, error: '' };
+        } catch (error) {
+          if (revision === this.revision)
+            this.snapshot = {
+              data,
+              status: 'Not saved',
+              error: error instanceof Error ? error.message : 'Could not save.',
+            };
+        }
+        this.emit();
+      });
+  };
+  flush = () => this.writing;
 }
