@@ -1,0 +1,589 @@
+.phone-page {
+  max-width: 740px;
+  margin: 0 auto;
+  padding-bottom: 20px;
+}
+.phone-heading {
+  margin-bottom: 26px;
+}
+.phone-heading .eyebrow,
+.cook-recipe-header .eyebrow {
+  margin-bottom: 10px;
+}
+.phone-heading h1 {
+  margin-bottom: 10px;
+}
+.phone-page .button {
+  min-height: 48px;
+  font-size: 14px;
+  white-space: normal;
+}
+.phone-page .icon-button {
+  width: 46px;
+  height: 46px;
+}
+.phone-page .text-button {
+  min-height: 44px;
+  font-size: 13px;
+}
+.phone-page summary {
+  cursor: pointer;
+  padding: 12px 0;
+  font-weight: 600;
+}
+.next-up,
+.resume-cooking {
+  display: flex;
+  gap: 18px;
+  padding: 26px;
+  background: var(--hero);
+  border: 1px solid var(--hero-line);
+  border-radius: 18px;
+  margin-bottom: 26px;
+}
+.next-up-icon {
+  color: var(--accent);
+  padding-top: 3px;
+}
+.next-up > div,
+.resume-cooking > div {
+  min-width: 0;
+}
+.next-up h2,
+.resume-cooking h2 {
+  margin: 7px 0 10px;
+  font-size: 24px;
+}
+.next-up p:not(.eyebrow) {
+  color: var(--hero-text);
+}
+.next-up .text-button {
+  margin-top: 6px;
+}
+.day-picker {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  padding: 8px;
+  border-radius: 12px;
+}
+.day-picker label {
+  display: grid;
+  text-align: center;
+  min-width: 0;
+}
+.day-picker label > span {
+  font-weight: 700;
+  font-size: 16px;
+}
+.day-picker input {
+  width: 175px;
+  max-width: 100%;
+  min-width: 0;
+  min-height: 44px;
+  padding: 4px;
+  border: 0;
+  background: transparent;
+  color: var(--muted);
+  font: inherit;
+}
+.day-summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  min-height: 60px;
+  font-size: 12px;
+  color: var(--muted);
+}
+.day-menu {
+  display: grid;
+  gap: 18px;
+}
+.day-menu > div {
+  scroll-margin-top: 20px;
+}
+.day-meal {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  padding: 22px;
+}
+.day-meal.next-meal {
+  border-color: var(--accent);
+}
+.day-meal-heading {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 18px;
+}
+.day-meal-heading h3 {
+  font-size: 20px;
+}
+.day-meal-badge {
+  margin-left: auto;
+  border-radius: 20px;
+  background: var(--surface-2);
+  color: var(--muted);
+  font-size: 11px;
+  padding: 5px 10px;
+}
+.next-meal .day-meal-badge {
+  background: var(--green-soft);
+  color: var(--accent);
+}
+.meal-eaten .day-meal-badge {
+  background: var(--green-soft);
+  color: var(--accent);
+}
+.day-components {
+  display: grid;
+  gap: 18px;
+}
+.day-component + .day-component {
+  border-top: 1px solid var(--line);
+  padding-top: 18px;
+}
+.day-component-title {
+  display: flex;
+  gap: 14px;
+  align-items: center;
+}
+.day-component-title img {
+  width: 64px;
+  height: 64px;
+  border-radius: 12px;
+  flex-shrink: 0;
+}
+.day-component-title a {
+  font-size: 17px;
+  font-weight: 600;
+  line-height: 1.4;
+}
+.day-component-title a:hover {
+  text-decoration: underline;
+}
+.day-component-title p {
+  font-size: 12px;
+  margin-top: 5px;
+  color: var(--muted);
+}
+.day-component-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 0 16px;
+  margin-top: 6px;
+}
+.day-component-actions details {
+  flex: 1;
+  min-width: 150px;
+}
+.day-component-actions details[open] {
+  flex-basis: 100%;
+}
+.day-component-actions summary {
+  font-size: 13px;
+  color: var(--accent);
+}
+.day-component-actions .prose {
+  font-size: 15px;
+  padding-bottom: 8px;
+}
+.day-nutrition {
+  font-size: 11px;
+  color: var(--muted);
+  margin: 16px 0 12px;
+}
+.stock-note {
+  background: var(--orange-soft);
+  color: var(--orange);
+  border-radius: 8px;
+  padding: 12px;
+  font-size: 12px;
+}
+.stock-note.ready {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--green-soft);
+  color: var(--accent);
+}
+.day-meal-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 18px;
+}
+.day-meal-actions .primary {
+  flex: 1;
+}
+.phone-page-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 24px;
+}
+.phone-save-status {
+  text-align: center;
+  color: var(--muted);
+  font-size: 12px;
+  margin-top: 22px;
+}
+.resume-cooking {
+  align-items: center;
+  color: var(--accent);
+}
+.resume-cooking p:last-child {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  font-size: 13px;
+}
+.cook-search {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 4px 16px;
+  border: 1px solid var(--line);
+  background: var(--surface);
+  border-radius: 12px;
+  color: var(--muted);
+}
+.cook-search input {
+  width: 100%;
+  min-width: 0;
+  min-height: 48px;
+  border: 0;
+  background: transparent;
+  color: var(--ink);
+  font-size: 16px;
+}
+.cook-list-caption {
+  color: var(--muted);
+  font-size: 12px;
+  margin: 18px 0;
+}
+.cook-recipe-list {
+  display: grid;
+  gap: 12px;
+}
+.cook-recipe-option {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 14px;
+}
+.cook-recipe-option:hover {
+  border-color: var(--accent);
+}
+.cook-recipe-option img {
+  width: 72px;
+  height: 72px;
+  border-radius: 9px;
+  flex-shrink: 0;
+}
+.cook-recipe-option > div {
+  flex: 1;
+  min-width: 0;
+}
+.cook-recipe-option h2 {
+  font-size: 17px;
+  line-height: 1.35;
+}
+.cook-recipe-option p {
+  font-size: 12px;
+  color: var(--muted);
+  margin-top: 5px;
+}
+.cook-recipe-option span {
+  display: block;
+  color: var(--accent);
+  font-size: 11px;
+  margin-top: 4px;
+}
+.cook-show-more {
+  margin-top: 20px;
+}
+.cook-recipe-header {
+  display: flex;
+  align-items: center;
+  gap: 22px;
+  margin-top: 8px;
+}
+.cook-recipe-header > div {
+  flex: 1;
+  min-width: 0;
+}
+.cook-recipe-header h1 {
+  font-size: 30px;
+  line-height: 1.15;
+}
+.cook-recipe-header p:last-child {
+  color: var(--muted);
+  margin-top: 12px;
+  font-size: 13px;
+}
+.cook-recipe-header img {
+  width: 104px;
+  height: 112px;
+  border-radius: 16px;
+  flex-shrink: 0;
+}
+.cook-source-line {
+  margin: 8px 0 16px;
+}
+.cook-tabs {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 4px;
+  padding: 5px;
+  border-radius: 12px;
+  border: 1px solid var(--line);
+  background: var(--surface-2);
+  margin-bottom: 22px;
+}
+.cook-tabs button {
+  min-height: 46px;
+  padding: 8px 2px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 600;
+}
+.cook-tabs button[aria-pressed='true'] {
+  background: var(--accent);
+  color: var(--on-accent);
+}
+.cook-instructions {
+  padding: 26px;
+  border: 1px solid var(--line);
+  background: var(--surface);
+  border-radius: 16px;
+  scroll-margin-top: 20px;
+}
+.cook-section-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+.cook-section-heading h2 {
+  font-size: 22px;
+}
+.cook-section-heading p {
+  font-size: 12px;
+  color: var(--muted);
+  margin-top: 6px;
+}
+.cook-section-heading > span {
+  white-space: nowrap;
+  font-family: var(--mono);
+  color: var(--accent);
+}
+.ingredient-count {
+  font-size: 12px;
+  color: var(--accent);
+  margin: 16px 0;
+}
+.ingredient-checklist {
+  margin-bottom: 18px;
+}
+.ingredient-checklist label {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 17px 0;
+  border-top: 1px solid var(--line);
+  cursor: pointer;
+}
+.ingredient-checklist input {
+  width: 22px;
+  height: 22px;
+  margin: 3px 0 0;
+  flex-shrink: 0;
+  accent-color: var(--accent);
+}
+.ingredient-checklist .prose {
+  font-size: 16px;
+}
+.ingredient-checklist .prose p {
+  margin: 0;
+}
+.ingredient-checklist .ingredient-amount {
+  display: block;
+  font-size: 16px;
+  color: var(--accent);
+  margin-top: 4px;
+}
+.ingredient-checklist small {
+  display: block;
+  color: var(--muted);
+  margin-top: 2px;
+  font-size: 13px;
+}
+.ingredient-checklist .is-checked > span {
+  opacity: 0.6;
+}
+.ingredient-checklist .is-checked .prose {
+  text-decoration: line-through;
+}
+.cook-notes {
+  border-top: 1px solid var(--line);
+  margin: 20px 0;
+}
+.cook-notes .prose {
+  font-size: 15px;
+}
+.cook-instructions > .prose {
+  font-size: 17px;
+  line-height: 1.8;
+}
+.cook-instructions > .button {
+  margin-top: 18px;
+}
+.cook-progress {
+  display: block;
+  width: 100%;
+  height: 6px;
+  border: 0;
+  border-radius: 6px;
+  overflow: hidden;
+  accent-color: var(--accent);
+  background: var(--line);
+}
+.cook-progress::-webkit-progress-bar {
+  background: var(--line);
+}
+.cook-progress::-webkit-progress-value {
+  background: var(--accent);
+}
+.cook-progress::-moz-progress-bar {
+  background: var(--accent);
+}
+.cook-step {
+  min-height: 260px;
+  padding: 28px 0;
+}
+.cook-step .eyebrow {
+  margin-bottom: 18px;
+  color: var(--accent);
+}
+.cook-step .prose {
+  font-size: 22px;
+  line-height: 1.75;
+}
+.cook-step .prose p {
+  margin: 0;
+}
+.cook-step-actions {
+  display: grid;
+  grid-template-columns: 1fr 1.2fr;
+  gap: 12px;
+}
+.cook-step-actions .button {
+  min-height: 54px;
+  padding: 12px;
+}
+.cooking-complete {
+  display: grid;
+  justify-items: center;
+  gap: 18px;
+  text-align: center;
+  padding: 30px 0;
+}
+.cooking-complete > svg {
+  color: var(--accent);
+}
+.cooking-complete p {
+  color: var(--muted);
+}
+.cook-progress-footer {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin: 20px 0;
+}
+.cook-progress-footer p {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+@media (max-width: 700px) {
+  .sidebar {
+    height: calc(67px + env(safe-area-inset-bottom));
+  }
+  .sidebar nav a[href='/overview'] {
+    display: none;
+  }
+  .sidebar nav a {
+    min-height: 60px;
+    justify-content: center;
+  }
+  .sidebar nav a.active {
+    background: var(--green-soft);
+    border-radius: 10px;
+  }
+  .main-shell {
+    padding-bottom: calc(75px + env(safe-area-inset-bottom));
+  }
+  .phone-heading h1 {
+    font-size: 30px;
+  }
+  .phone-heading > .muted {
+    font-size: 13px;
+  }
+  .next-up,
+  .resume-cooking {
+    padding: 20px;
+    gap: 14px;
+  }
+  .next-up h2,
+  .resume-cooking h2 {
+    font-size: 21px;
+  }
+  .day-meal {
+    padding: 18px;
+  }
+  .cook-instructions {
+    padding: 20px;
+  }
+  .cook-recipe-header {
+    gap: 14px;
+  }
+  .cook-recipe-header h1 {
+    font-size: 27px;
+  }
+  .cook-recipe-header img {
+    width: 76px;
+    height: 96px;
+  }
+  .cook-step .prose {
+    font-size: 20px;
+  }
+  .cook-recipe-option {
+    gap: 12px;
+    padding: 12px;
+  }
+  .cook-recipe-option img {
+    width: 58px;
+    height: 68px;
+  }
+  .cook-recipe-option h2 {
+    font-size: 16px;
+  }
+  .cook-tabs button {
+    font-size: 12px;
+  }
+}

@@ -12,7 +12,28 @@ npm install
 npm run dev
 ```
 
-Open the URL Vite prints. `npm run dev -- --host` also serves devices on your local network.
+Open the URL Vite prints. The dev server also serves devices on your local network.
+
+### Open on your phone
+
+Keep `npm run dev` running on this computer and connect your phone to the same Wi-Fi.
+Open the **Network** URL printed by Vite (for example `http://192.168.1.20:5173/today`)
+in your phone browser. Use the computer's network address, not `localhost` on the phone.
+The computer must stay awake and its firewall must allow port 5173 on your local network.
+
+- **Today** (`/today`): the next uneaten meal from today onward, the selected day's full menu,
+  reheating instructions, and mark eaten / undo. Use the arrows or date field to browse days.
+- **Cook** (`/cook`): pick or resume a recipe, tick off ingredients, and follow large steps.
+  Method, freezing, and reheating instructions are all available. Progress is saved per recipe
+  on the device; **Start a new batch** clears that recipe's checklist and progress.
+
+Phones open on Today by default. Both pages are also available on desktop. The phone's bottom
+navigation keeps Today, Cook, My freezer, Monthly plan, and Recipe library within reach.
+Recipe detail pages link directly to **Cook step by step**.
+
+The menu and freezer use the shared project data while this server is running. Reload after
+changes on another device; avoid editing on both devices at once. Cooking progress stays on
+each device. Home-screen PWA installation requires HTTPS; ordinary browsing works over local HTTP.
 
 ## Use the app
 
@@ -59,6 +80,10 @@ Archived recipes are excluded. Photos and videos show source versions, which can
 local cube adaptations. Attribution links are shown on recipe pages.
 
 ## Saved data
+
+Use **Theme** in the top bar (the palette icon on mobile) to choose Sage or Sand light themes,
+Forest or Midnight dark themes, or System to follow your device. The choice applies immediately
+and is remembered on this browser, separately from your kitchen data.
 
 - Browser: `localStorage['cube-kitchen:v1']` (versioned and timestamped).
 - Dev/preview server: `data/cube-kitchen.json` and readable `data/cube-status.md`.

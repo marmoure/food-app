@@ -1,4 +1,5 @@
 import { daysInMonth, localDate } from './dates';
+import { newId } from './id';
 import { recipeById } from './recipes';
 import {
   SLOTS,
@@ -168,7 +169,7 @@ export function generateMonth(
                   pick(palette.starch, day + (slot === 'dinner' ? 1 : 0), settings.people),
                   pick(palette.veg, day + (slot === 'dinner' ? 1 : 0), settings.people),
                 ];
-        meals.push({ id: crypto.randomUUID(), date, slot, components });
+        meals.push({ id: newId(), date, slot, components });
       });
     });
   return { ...data, settings, meals };

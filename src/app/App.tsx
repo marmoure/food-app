@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
-import { Link, NavLink, Route, Routes, useLocation } from 'react-router';
+import { Link, NavLink, Navigate, Route, Routes, useLocation } from 'react-router';
 import { Icon, type IconName } from '../components/Icon';
+import { ThemePicker } from '../components/ThemePicker';
 import { localDate } from '../domain/dates';
 import { RECIPES } from '../domain/recipes';
 import type { Slot } from '../domain/types';
@@ -11,6 +12,8 @@ import { Freezer } from './Freezer';
 import { MonthlyPlan } from './MonthlyPlan';
 import { RecipeDetail, Recipes } from './Recipes';
 import { UIContext } from './ui-context';
+import { Today } from './Today';
+import { Cook } from './Cook';
 
 type Dialog =
   | { type: 'batch'; recipeId?: string; batchId?: string }
@@ -18,11 +21,21 @@ type Dialog =
   | { type: 'generate' }
   | { type: 'settings' };
 const NAV: { to: string; label: string; icon: IconName }[] = [
-  { to: '/', label: 'Overview', icon: 'home' },
+  { to: '/today', label: 'Today', icon: 'sun' },
+  { to: '/cook', label: 'Cook', icon: 'book' },
+  { to: '/overview', label: 'Overview', icon: 'home' },
   { to: '/freezer', label: 'My freezer', icon: 'freezer' },
   { to: '/plan', label: 'Monthly plan', icon: 'calendar' },
   { to: '/recipes', label: 'Recipe library', icon: 'book' },
 ];
+
+function Home() {
+  return window.matchMedia?.('(max-width: 700px)').matches ? (
+    <Navigate to="/today" replace />
+  ) : (
+    <Navigate to="/overview" replace />
+  );
+}
 
 export function App() {
   const { data, status, error } = useStore();
@@ -120,6 +133,7 @@ export function App() {
                   month: 'short',
                 })}
               </span>
+              <ThemePicker />
               <button className="button primary small-button" onClick={() => ui.addBatch()}>
                 <Icon name="plus" size={17} />
                 Add batch
@@ -136,7 +150,11 @@ export function App() {
               </div>
             )}
             <Routes>
-              <Route path="/" element={<Dashboard />} />
+              <Route path="/" element={<Home />} />
+              <Route path="/overview" element={<Dashboard />} />
+              <Route path="/today" element={<Today />} />
+              <Route path="/cook" element={<Cook />} />
+              <Route path="/cook/:id" element={<Cook />} />
               <Route path="/freezer" element={<Freezer />} />
               <Route path="/plan" element={<MonthlyPlan />} />
               <Route path="/recipes" element={<Recipes />} />

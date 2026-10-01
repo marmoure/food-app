@@ -4,13 +4,16 @@ import { VitePWA } from 'vite-plugin-pwa';
 import { dataApi } from './server/data-api.ts';
 
 export default defineConfig({
+  server: { host: true, port: 5173, strictPort: true },
+  preview: { host: true },
   plugins: [
     react(),
     dataApi(),
     VitePWA({
       registerType: 'autoUpdate',
       // Icons are generated from public/icon.svg by pwa-assets.config.ts and injected into the manifest.
-      pwaAssets: { config: true },
+      // The app updates the HTML theme color to match the selected palette.
+      pwaAssets: { config: true, injectThemeColor: false },
       manifest: {
         name: 'Cube Kitchen',
         short_name: 'Cube Kitchen',

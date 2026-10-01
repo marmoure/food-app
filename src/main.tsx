@@ -6,7 +6,10 @@ import { Recovery } from './app/Recovery';
 import { StoreContext } from './storage/context';
 import { browserAdapter, CubeStore } from './storage/store';
 import './styles/global.css';
+import './styles/phone.css';
+import { applyTheme, readTheme } from './theme';
 
+applyTheme(readTheme());
 const store = new CubeStore(browserAdapter());
 const root = createRoot(document.getElementById('root')!);
 void store

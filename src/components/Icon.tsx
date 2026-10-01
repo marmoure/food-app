@@ -1,6 +1,12 @@
 import type { CSSProperties } from 'react';
 
 const paths = {
+  palette: (
+    <>
+      <path d="M12 3a9 9 0 1 0 0 18h1a2 2 0 0 0 1.4-3.4 1.5 1.5 0 0 1 1.1-2.6H17a4 4 0 0 0 4-4c0-4.4-4-8-9-8Z" />
+      <path d="M7.5 10h.01M10 6.5h.01M14.5 7h.01M17.5 10.5h.01" strokeWidth="3" />
+    </>
+  ),
   cube: (
     <>
       <path d="m12 3 9 5v8l-9 5-9-5V8zM3 8l9 5 9-5M12 13v8" />

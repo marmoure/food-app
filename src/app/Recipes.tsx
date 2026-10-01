@@ -231,7 +231,11 @@ export function RecipeDetail() {
             </div>
           </div>
           <div className="detail-actions">
-            <button className="button primary" onClick={() => addBatch(recipe.id)}>
+            <Link className="button primary" to={`/cook/${recipe.id}`}>
+              <Icon name="book" size={17} />
+              Cook step by step
+            </Link>
+            <button className="button secondary" onClick={() => addBatch(recipe.id)}>
               <Icon name="plus" size={17} />
               Log a frozen batch
             </button>

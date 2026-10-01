@@ -243,8 +243,8 @@ export function MonthlyPlan() {
                       cooking.
                     </small>
                     <div>
-                      <Link to={`/recipes/${recipe.id}`} className="text-button">
-                        View recipe <Icon name="arrow" size={14} />
+                      <Link to={`/cook/${recipe.id}`} className="text-button">
+                        Start cooking <Icon name="arrow" size={14} />
                       </Link>
                       <button className="text-button" onClick={() => addBatch(recipe.id)}>
                         <Icon name="plus" size={14} />

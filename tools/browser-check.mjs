@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 
 // Start Chrome with --remote-debugging-port=9225 and the Vite server first.
 // API requests are intercepted inside this isolated tab: smoke tests never write user data.
-const origin = process.env.CUBE_TEST_ORIGIN || 'http://127.0.0.1:5173';
+const origin = process.argv[2] || process.env.CUBE_TEST_ORIGIN || 'http://127.0.0.1:5173';
 const target = await (
   await fetch('http://127.0.0.1:9225/json/new?about:blank', { method: 'PUT' })
 ).json();
@@ -85,7 +85,7 @@ try {
   await send('Page.enable');
   await send('Runtime.enable');
   await send('Page.addScriptToEvaluateOnNewDocument', {
-    source: `if (!sessionStorage.getItem('cube-smoke-started')) { localStorage.removeItem('cube-kitchen:v1'); sessionStorage.setItem('cube-smoke-started', '1'); } const originalFetch = window.fetch.bind(window); window.fetch = (input, init) => { const url = typeof input === 'string' ? input : input.url; if (new URL(url, location.href).pathname === '/api/cubes') return Promise.resolve(new Response(null, { status: init?.method === 'PUT' ? 204 : 404 })); return originalFetch(input, init); };`,
+    source: `if (!sessionStorage.getItem('cube-smoke-started')) { Object.keys(localStorage).filter(key => key === 'cube-kitchen:v1' || key === 'cube-kitchen:last-cook' || key.startsWith('cube-kitchen:cook:')).forEach(key => localStorage.removeItem(key)); sessionStorage.setItem('cube-smoke-started', '1'); } const originalFetch = window.fetch.bind(window); window.fetch = (input, init) => { const url = typeof input === 'string' ? input : input.url; if (new URL(url, location.href).pathname === '/api/cubes') return Promise.resolve(new Response(null, { status: init?.method === 'PUT' ? 204 : 404 })); return originalFetch(input, init); };`,
   });
   await viewport(1440, 1120);
   await send('Page.navigate', { url: origin });
@@ -112,7 +112,7 @@ try {
   await until("document.querySelector('.batch-card')");
   await screenshot('mobile-freezer');
   await checkWidth('freezer');
-  await click('nav a[href="/"]');
+  await click('nav a[href="/overview"]');
   await until("document.querySelector('.hero')");
   await button('Add today’s first meal');
   await until("document.querySelector('[role=dialog]')");
@@ -162,9 +162,74 @@ try {
   await checkWidth('mobile recipe');
   await screenshot('mobile-recipe');
   assert.equal((await state()).favorites.length, 1);
+  await click('nav a[href="/today"]');
+  await until("document.querySelector('.day-meal')");
+  await checkWidth('daily menu');
+  await screenshot('mobile-today');
+  await button('Mark eaten');
+  await until("document.querySelector('.meal-eaten')");
+  assert.equal((await state()).batches[0].remaining, 12);
+  await button('Undo eaten');
+  await until("!document.querySelector('.meal-eaten')");
+  assert.equal((await state()).batches[0].remaining, 14);
+  const menuDate = await evaluate('document.querySelector(\'[aria-label="Menu date"]\').value');
+  await click('button[aria-label="Next day"]');
+  await until(
+    `document.querySelector('[aria-label="Menu date"]').value !== ${JSON.stringify(menuDate)}`,
+  );
+  await button('Back to today');
+  await until("document.querySelector('.day-meal')");
+  await click('.day-component a[href="/cook/chicken-chicken-karahi"]');
+  await until("document.querySelector('.ingredient-checklist')");
+  await click('.ingredient-checklist input');
+  await screenshot('mobile-cook-ingredients');
+  await checkWidth('cooking ingredients');
+  await button('Start cooking');
+  await button('Next step');
+  await until("document.querySelector('.cook-step .eyebrow').textContent.includes('STEP 2')");
+  await screenshot('mobile-cook-method');
+  const cookingDocument = await evaluate('performance.timeOrigin');
+  await send('Page.reload');
+  await until(
+    `performance.timeOrigin !== ${cookingDocument} && document.querySelector('.cook-step .eyebrow')?.textContent.includes('STEP 2')`,
+  );
+  await button('Ingredients');
+  assert.ok(await evaluate("document.querySelector('.ingredient-checklist input').checked"));
+  await button('Method');
+  for (const width of [320, 390, 768, 1440]) {
+    await viewport(width, 844);
+    await checkWidth(`cooking at ${width}px`);
+  }
+  await screenshot('desktop-cook');
+  await viewport(390, 844);
+  await evaluate("document.documentElement.dataset.theme = 'midnight'");
+  await screenshot('mobile-cook-dark');
+  await evaluate("document.documentElement.dataset.theme = 'light'");
+  await button('Freeze');
+  await checkWidth('freezing instructions');
+  await button('Reheat');
+  await checkWidth('reheating instructions');
+  await click('nav a[href="/cook"]');
+  await until("document.querySelector('.resume-cooking')");
+  await screenshot('mobile-cook-picker');
+  await input('[aria-label="Find a recipe to cook"]', 'nomatchxyz');
+  await until("document.querySelector('.phone-page .empty-state')");
+  await button('Show all recipes');
+  await until("document.querySelector('.cook-recipe-option')");
+  await viewport(320, 740);
+  await checkWidth('small phone recipe picker');
+  await send('Page.navigate', { url: origin });
+  await until("location.pathname === '/today' && document.querySelector('.day-meal')");
+  await checkWidth('small phone daily menu');
+  assert.equal(
+    await evaluate(
+      "[...document.querySelectorAll('.sidebar nav a')].filter(el => el.getClientRects().length).length",
+    ),
+    5,
+  );
   assert.deepEqual(errors, []);
   console.log(
-    'Browser checks passed: desktop/mobile layouts, batch logging, planning, eating/undo, reload persistence, search, favorites, recipe instructions. Screenshots: /tmp/cube-kitchen-*.png',
+    'Browser checks passed: desktop/mobile layouts, batch logging, planning, eating/undo, daily menu, phone landing, cooking/checklist persistence, day navigation, search, favorites, light/dark recipes. Screenshots: /tmp/cube-kitchen-*.png',
   );
 } finally {
   await send('Page.close').catch(() => {});

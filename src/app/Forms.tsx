@@ -4,6 +4,7 @@ import { Modal } from '../components/Modal';
 import { Icon } from '../components/Icon';
 import { localDate, nextMonthDate, daysInMonth, monthName, shortDate } from '../domain/dates';
 import { RECIPES, recipeById, ROLE_NAMES } from '../domain/recipes';
+import { newId } from '../domain/id';
 import {
   allocateMeal,
   consumeMeal,
@@ -74,7 +75,7 @@ export function BatchForm({
           batches: [
             ...state.batches,
             {
-              id: crypto.randomUUID(),
+              id: newId(),
               recipeId: selected,
               total,
               remaining: total,
@@ -291,7 +292,7 @@ export function MealForm({
         state.meals.some((meal) => meal.date === date && meal.slot === slot && meal.id !== mealId)
       )
         throw new Error('This meal slot is already planned. Open that meal to edit it.');
-      const meal = { id: mealId ?? crypto.randomUUID(), date, slot, components };
+      const meal = { id: mealId ?? newId(), date, slot, components };
       return {
         ...state,
         meals: mealId

@@ -1,4 +1,5 @@
-:root {
+:root,
+.theme-preview {
   color-scheme: light;
   --bg: #f8f9f6;
   --surface: #ffffff;
@@ -35,7 +36,10 @@
   --body: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
   --mono: 'IBM Plex Mono', ui-monospace, monospace;
 }
-:root[data-theme='dark'] {
+:root[data-theme='dark'],
+.theme-preview[data-theme='dark'],
+:root[data-theme='midnight'],
+.theme-preview[data-theme='midnight'] {
   color-scheme: dark;
   --bg: #141c18;
   --surface: #1c2821;
@@ -64,4 +68,47 @@
   --cream-soft: #403b28;
   --danger: #edafb5;
   --today-bg: #26382b;
+}
+:root[data-theme='sand'],
+.theme-preview[data-theme='sand'] {
+  --bg: #f8f4ed;
+  --surface: #fffcf7;
+  --surface-2: #f1eae0;
+  --ink: #44362d;
+  --muted: #796b5e;
+  --faint: #84766a;
+  --line: #e6dccf;
+  --accent: #925033;
+  --accent-hover: #783f27;
+  --focus: #bd8967;
+  --hero: #f0e4d4;
+  --hero-line: #e4d2bb;
+  --hero-text: #79624e;
+  --green-soft: #eee3d4;
+  --orange: #99552c;
+  --orange-soft: #f6e8d9;
+  --today-bg: #fbf0e1;
+}
+:root[data-theme='midnight'],
+.theme-preview[data-theme='midnight'] {
+  --bg: #141923;
+  --surface: #1d2533;
+  --surface-2: #273143;
+  --ink: #e5eaf4;
+  --muted: #b1bdd1;
+  --faint: #92a0b8;
+  --line: #354259;
+  --accent: #b5baf6;
+  --accent-hover: #ced1ff;
+  --on-accent: #222542;
+  --focus: #929ee8;
+  --hero: #2a304b;
+  --hero-line: #414a6c;
+  --hero-text: #c0c7e4;
+  --green-soft: #303752;
+  --blue-soft: #283b53;
+  --purple-soft: #37334f;
+  --rose-soft: #432f43;
+  --rose-line: #634b66;
+  --today-bg: #272f45;
 }
